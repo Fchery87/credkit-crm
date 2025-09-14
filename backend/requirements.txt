@@ -12,5 +12,5 @@ python-jose[cryptography]
 stripe
 boto3
 twilio
-postmarksend
+postmark
 docusign-esign

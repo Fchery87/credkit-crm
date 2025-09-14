@@ -1,7 +1,7 @@
 import os
 from typing import Optional, Dict, Any
 from twilio.rest import Client as TwilioClient
-from postmarksend import PostmarkClient
+from postmark import PMMail
 from fastapi import HTTPException
 import logging
 
@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     def __init__(self):
-        self.postmark_client = PostmarkClient(
-            server_token=os.getenv('POSTMARK_SERVER_TOKEN')
-        )
+        self.postmark_token = os.getenv('POSTMARK_SERVER_TOKEN')
         self.from_email = os.getenv('FROM_EMAIL', 'noreply@credkit.com')
     
     async def send_email(
@@ -26,25 +24,24 @@ class EmailService:
     ) -> bool:
         """Send email via Postmark"""
         try:
-            if template_id and template_data:
-                # Send templated email
-                response = self.postmark_client.emails.send_email_with_template(
-                    From=self.from_email,
-                    To=to_email,
-                    TemplateId=template_id,
-                    TemplateModel=template_data
-                )
-            else:
-                # Send regular email
-                response = self.postmark_client.emails.send(
-                    From=self.from_email,
-                    To=to_email,
-                    Subject=subject,
-                    HtmlBody=html_body,
-                    TextBody=text_body or ""
-                )
+            if not self.postmark_token:
+                logger.warning("Postmark token not configured")
+                return False
+                
+            # Create email using PMMail
+            email = PMMail(
+                api_key=self.postmark_token,
+                subject=subject,
+                sender=self.from_email,
+                to=to_email,
+                html_body=html_body,
+                text_body=text_body or ""
+            )
             
-            logger.info(f"Email sent successfully to {to_email}, MessageID: {response['MessageID']}")
+            # Send email
+            response = email.send()
+            
+            logger.info(f"Email sent successfully to {to_email}")
             return True
             
         except Exception as e:
