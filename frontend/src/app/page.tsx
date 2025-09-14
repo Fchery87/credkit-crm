@@ -4,14 +4,20 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Users, 
+  FileText, 
+  Mail, 
   CheckSquare, 
-  Calendar, 
+  DollarSign,
   TrendingUp,
   ArrowUpRight,
+  ArrowDownRight,
   Plus,
   Filter,
-  Search
+  MoreHorizontal,
+  Clock,
+  AlertCircle
 } from "lucide-react";
+import { ModernChart } from "@/components/charts/ModernChart";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -19,7 +25,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -38,65 +44,109 @@ export default function DashboardPage() {
     );
   }
 
-  const kpiCards = [
+  // KPI Data
+  const kpiData = [
     {
       title: "Active Clients",
       value: "247",
       change: "+12%",
       trend: "up",
       icon: Users,
-      color: "primary"
+      color: "primary",
+      description: "vs last month"
     },
     {
-      title: "Open Tasks",
+      title: "Disputes Open", 
       value: "89",
       change: "+5%",
       trend: "up",
-      icon: CheckSquare,
-      color: "secondary"
+      icon: FileText,
+      color: "secondary",
+      description: "in progress"
     },
     {
-      title: "Due Today",
+      title: "Letters Sent",
+      value: "156",
+      change: "+23%", 
+      trend: "up",
+      icon: Mail,
+      color: "accent",
+      description: "this month"
+    },
+    {
+      title: "Tasks Due",
       value: "12",
-      change: "-3%",
+      change: "-8%",
       trend: "down",
-      icon: Calendar,
-      color: "warning"
+      icon: CheckSquare,
+      color: "warning",
+      description: "today"
     },
     {
       title: "Monthly Revenue",
       value: "$24,580",
       change: "+18%",
-      trend: "up",
-      icon: TrendingUp,
-      color: "accent"
+      trend: "up", 
+      icon: DollarSign,
+      color: "success",
+      description: "recurring"
     }
   ];
 
-  const recentTasks = [
+  // Chart Data
+  const conversionData = [
+    { name: "Jan", leads: 45, clients: 32 },
+    { name: "Feb", leads: 52, clients: 38 },
+    { name: "Mar", leads: 48, clients: 35 },
+    { name: "Apr", leads: 61, clients: 42 },
+    { name: "May", leads: 55, clients: 39 },
+    { name: "Jun", leads: 67, clients: 48 }
+  ];
+
+  const throughputData = [
+    { name: "Week 1", completed: 23 },
+    { name: "Week 2", completed: 31 },
+    { name: "Week 3", completed: 28 },
+    { name: "Week 4", completed: 35 }
+  ];
+
+  // Activity Feed Data
+  const activities = [
     {
       id: 1,
-      title: "Review credit report for John Doe",
-      client: "John Doe",
-      priority: "high",
-      status: "in_progress",
-      dueDate: "Today"
+      type: "client_added",
+      title: "New client added",
+      description: "Sarah Johnson signed up for Professional plan",
+      time: "2 minutes ago",
+      icon: Users,
+      color: "primary"
     },
     {
       id: 2,
-      title: "Prepare dispute letters for Jane Smith",
-      client: "Jane Smith", 
-      priority: "medium",
-      status: "todo",
-      dueDate: "Tomorrow"
+      type: "dispute_resolved",
+      title: "Dispute resolved",
+      description: "Capital One account removed for Michael Brown",
+      time: "1 hour ago",
+      icon: CheckSquare,
+      color: "success"
     },
     {
       id: 3,
-      title: "Follow up with Michael Johnson",
-      client: "Michael Johnson",
-      priority: "high",
-      status: "todo",
-      dueDate: "Today"
+      type: "letter_sent",
+      title: "Dispute letter sent",
+      description: "3 letters sent to credit bureaus for Jane Doe",
+      time: "3 hours ago",
+      icon: Mail,
+      color: "secondary"
+    },
+    {
+      id: 4,
+      type: "task_overdue",
+      title: "Task overdue",
+      description: "Follow-up call for David Wilson is 2 days overdue",
+      time: "5 hours ago",
+      icon: AlertCircle,
+      color: "warning"
     }
   ];
 
@@ -126,14 +176,14 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
-        className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
       >
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="h1 text-foreground">Good morning, Admin</h1>
-              <p className="text-lg text-muted-foreground mt-2">
-                Here's what's happening with your credit repair business today.
+              <h1 className="h1 text-foreground">Dashboard</h1>
+              <p className="text-base text-muted-foreground mt-1">
+                Monitor your credit repair business performance
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -150,85 +200,142 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-8 py-8">
         {/* KPI Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12"
         >
-          {kpiCards.map((card, index) => (
+          {kpiData.map((kpi, index) => (
             <motion.div
-              key={card.title}
+              key={kpi.title}
               variants={itemVariants}
-              className="card-modern p-6 group cursor-pointer"
+              className="card-modern p-6 group cursor-pointer hover:scale-[1.02] transition-transform duration-200"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-${card.color}/10`}>
-                  <card.icon className={`w-6 h-6 text-${card.color}`} />
+                <div className={`p-3 rounded-xl bg-${kpi.color}/10 group-hover:bg-${kpi.color}/20 transition-colors duration-200`}>
+                  <kpi.icon className={`w-5 h-5 text-${kpi.color}`} />
                 </div>
                 <div className={`flex items-center gap-1 text-xs font-medium ${
-                  card.trend === 'up' ? 'text-success' : 'text-destructive'
+                  kpi.trend === 'up' ? 'text-success' : 'text-destructive'
                 }`}>
-                  <ArrowUpRight className={`w-3 h-3 ${card.trend === 'down' ? 'rotate-90' : ''}`} />
-                  {card.change}
+                  {kpi.trend === 'up' ? (
+                    <ArrowUpRight className="w-3 h-3" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3" />
+                  )}
+                  {kpi.change}
                 </div>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">{card.title}</p>
-                <p className="h2 text-foreground">{card.value}</p>
+                <p className="h2 text-foreground mb-1">{kpi.value}</p>
+                <p className="text-sm text-muted-foreground">{kpi.title}</p>
+                <p className="text-xs text-muted-foreground mt-1">{kpi.description}</p>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Recent Tasks */}
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 0.22, ease: "easeOut", delay: 0.3 }}
+            className="card-modern p-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="h3 text-foreground">Lead Conversion</h3>
+                <p className="text-sm text-muted-foreground mt-1">Leads to clients over time</p>
+              </div>
+              <button className="p-2 rounded-lg hover:bg-muted transition-colors duration-150">
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+            <ModernChart
+              data={conversionData}
+              type="area"
+              height={280}
+              dataKey="clients"
+              xAxisKey="name"
+              showGrid={true}
+              colors={["hsl(220, 91%, 54%)", "hsl(174, 72%, 56%)"]}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut", delay: 0.4 }}
+            className="card-modern p-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="h3 text-foreground">Task Throughput</h3>
+                <p className="text-sm text-muted-foreground mt-1">Completed tasks per week</p>
+              </div>
+              <button className="p-2 rounded-lg hover:bg-muted transition-colors duration-150">
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+            <ModernChart
+              data={throughputData}
+              type="bar"
+              height={280}
+              dataKey="completed"
+              xAxisKey="name"
+              showGrid={true}
+              colors={["hsl(174, 72%, 56%)"]}
+            />
+          </motion.div>
+        </div>
+
+        {/* Activity Feed & Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Activity Feed */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut", delay: 0.5 }}
             className="lg:col-span-2"
           >
             <div className="card-modern p-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="h3 text-foreground">Recent Tasks</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Your most important tasks requiring attention
-                  </p>
+                  <h3 className="h3 text-foreground">Recent Activity</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Latest updates across your organization</p>
                 </div>
                 <button className="text-sm font-medium text-primary hover:text-primary-hover transition-colors duration-150">
                   View all
                 </button>
               </div>
 
-              <div className="space-y-4">
-                {recentTasks.map((task, index) => (
+              <div className="space-y-6">
+                {activities.map((activity, index) => (
                   <motion.div
-                    key={task.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.15, delay: index * 0.05 }}
-                    className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-muted/50 transition-all duration-150 group cursor-pointer"
+                    key={activity.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15, delay: 0.6 + index * 0.05 }}
+                    className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-150 group cursor-pointer"
                   >
-                    <div className="flex-1">
-                      <h4 className="font-medium text-foreground group-hover:text-primary transition-colors duration-150">
-                        {task.title}
-                      </h4>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Client: {task.client}
-                      </p>
+                    <div className={`p-2 rounded-lg bg-${activity.color}/10 group-hover:bg-${activity.color}/20 transition-colors duration-200`}>
+                      <activity.icon className={`w-4 h-4 text-${activity.color}`} />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`badge-${task.priority === 'high' ? 'error' : task.priority === 'medium' ? 'warning' : 'info'}`}>
-                        {task.priority}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {task.dueDate}
-                      </span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-foreground group-hover:text-primary transition-colors duration-150">
+                        {activity.title}
+                      </h4>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                        {activity.description}
+                      </p>
+                      <div className="flex items-center gap-1 mt-2">
+                        <Clock className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{activity.time}</span>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -238,143 +345,70 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut", delay: 0.3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut", delay: 0.6 }}
             className="space-y-6"
           >
             {/* Quick Actions Card */}
             <div className="card-modern p-6">
               <h3 className="h4 text-foreground mb-6">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-primary/5 hover:border-primary/20 transition-all duration-150 text-left group">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-150">
-                    <Users className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Add New Client</p>
-                    <p className="text-xs text-muted-foreground">Start a new case</p>
-                  </div>
-                </button>
-                
-                <button className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-secondary/5 hover:border-secondary/20 transition-all duration-150 text-left group">
-                  <div className="p-2 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 transition-colors duration-150">
-                    <CheckSquare className="w-4 h-4 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Create Task</p>
-                    <p className="text-xs text-muted-foreground">Add to pipeline</p>
-                  </div>
-                </button>
-                
-                <button className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-accent/5 hover:border-accent/20 transition-all duration-150 text-left group">
-                  <div className="p-2 rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors duration-150">
-                    <TrendingUp className="w-4 h-4 text-accent" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">View Reports</p>
-                    <p className="text-xs text-muted-foreground">Analytics & insights</p>
-                  </div>
-                </button>
+                {[
+                  { icon: Users, label: "Add Client", desc: "Start new case", color: "primary" },
+                  { icon: CheckSquare, label: "Create Task", desc: "Add to pipeline", color: "secondary" },
+                  { icon: FileText, label: "New Dispute", desc: "File dispute", color: "accent" },
+                  { icon: Mail, label: "Send Letter", desc: "Generate letter", color: "warning" }
+                ].map((action, index) => (
+                  <motion.button
+                    key={action.label}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15, delay: 0.7 + index * 0.05 }}
+                    className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 hover:border-primary/20 transition-all duration-150 text-left group"
+                  >
+                    <div className={`p-2 rounded-lg bg-${action.color}/10 group-hover:bg-${action.color}/20 transition-colors duration-200`}>
+                      <action.icon className={`w-4 h-4 text-${action.color}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-150">
+                        {action.label}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{action.desc}</p>
+                    </div>
+                  </motion.button>
+                ))}
               </div>
             </div>
 
             {/* System Status */}
             <div className="card-modern p-6">
-              <h3 className="h4 text-foreground mb-4">System Status</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">API Status</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-success"></div>
-                    <span className="text-xs font-medium text-success">Operational</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Database</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-success"></div>
-                    <span className="text-xs font-medium text-success">Connected</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Real-time</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-success"></div>
-                    <span className="text-xs font-medium text-success">Active</span>
-                  </div>
-                </div>
+              <h3 className="h4 text-foreground mb-4">System Health</h3>
+              <div className="space-y-4">
+                {[
+                  { label: "API Status", status: "Operational", color: "success" },
+                  { label: "Database", status: "Connected", color: "success" },
+                  { label: "Real-time", status: "Active", color: "success" },
+                  { label: "Integrations", status: "All systems", color: "success" }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.15, delay: 0.8 + index * 0.05 }}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-muted-foreground">{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full bg-${item.color}`}></div>
+                      <span className={`text-xs font-medium text-${item.color}`}>{item.status}</span>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>
         </div>
-
-        {/* Getting Started Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: "easeOut", delay: 0.4 }}
-          className="mt-12"
-        >
-          <div className="card-modern p-8">
-            <div className="text-center mb-8">
-              <h2 className="h2 text-foreground mb-3">Welcome to CredKit CRM</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Your comprehensive credit repair management platform is ready. 
-                Follow these steps to get started with your first client.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  step: "1",
-                  title: "Set Up Your Profile",
-                  description: "Complete your organization settings and user preferences",
-                  color: "primary"
-                },
-                {
-                  step: "2", 
-                  title: "Add Your First Client",
-                  description: "Import or manually add client information to begin",
-                  color: "secondary"
-                },
-                {
-                  step: "3",
-                  title: "Create Pipeline Stages",
-                  description: "Customize your workflow stages and automation rules",
-                  color: "accent"
-                },
-                {
-                  step: "4",
-                  title: "Start Managing Cases",
-                  description: "Begin tracking disputes, tasks, and client progress",
-                  color: "success"
-                }
-              ].map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.22, delay: 0.5 + index * 0.1 }}
-                  className="relative p-6 rounded-2xl border border-border hover:border-primary/20 hover:bg-primary/5 transition-all duration-200 group cursor-pointer"
-                >
-                  <div className={`w-8 h-8 rounded-xl bg-${step.color}/10 flex items-center justify-center mb-4 group-hover:bg-${step.color}/20 transition-colors duration-200`}>
-                    <span className={`text-sm font-bold text-${step.color}`}>
-                      {step.step}
-                    </span>
-                  </div>
-                  <h4 className="h4 text-foreground mb-2 group-hover:text-primary transition-colors duration-200">
-                    {step.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {step.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
