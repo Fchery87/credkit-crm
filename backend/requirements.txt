@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary # Use psycopg2 instead of psycopg for broader compatibility
+pydantic-settings
+pydantic
+redis
+python-dotenv
+alembic
+passlib[bcrypt]
+python-jose[cryptography]
+stripe
+boto3
+twilio
+postmarksend
+docusign-esign
