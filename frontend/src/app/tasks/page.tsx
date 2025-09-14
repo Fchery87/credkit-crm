@@ -14,6 +14,8 @@ import {
   Circle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { bgTint, textColor, type BrandColor } from "@/lib/color-variants";
 
 interface Task {
   id: string;
@@ -129,7 +131,7 @@ export default function TasksPage() {
     }
   ];
 
-  const getPriorityColor = (priority: Task['priority']) => {
+  const getPriorityColor = (priority: Task['priority']): BrandColor => {
     switch (priority) {
       case "urgent": return "destructive";
       case "high": return "warning";
@@ -257,6 +259,7 @@ export default function TasksPage() {
                 <div className="space-y-3">
                   {column.tasks.map((task, taskIndex) => {
                     const PriorityIcon = getPriorityIcon(task.priority);
+                    const color = getPriorityColor(task.priority);
                     
                     return (
                       <motion.div
@@ -267,9 +270,10 @@ export default function TasksPage() {
                         draggable
                         onDragStart={() => handleDragStart(task)}
                         onDragEnd={handleDragEnd}
-                        className={`card-modern p-4 cursor-grab active:cursor-grabbing group hover:shadow-soft-md transition-all duration-200 ${
-                          draggedTask?.id === task.id ? "opacity-50 scale-95" : ""
-                        }`}
+                        className={cn(
+                          "card-modern p-4 cursor-grab active:cursor-grabbing group hover:shadow-soft-md transition-all duration-200",
+                          draggedTask?.id === task.id && "opacity-50 scale-95"
+                        )}
                       >
                         {/* Task Header */}
                         <div className="flex items-start justify-between mb-3">
@@ -302,10 +306,10 @@ export default function TasksPage() {
                         {/* Task Footer */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <div className={`p-1 rounded-lg bg-${getPriorityColor(task.priority)}/10`}>
-                              <PriorityIcon className={`w-3 h-3 text-${getPriorityColor(task.priority)}`} />
+                            <div className={cn("p-1 rounded-lg", bgTint[color])}>
+                              <PriorityIcon className={cn("w-3 h-3", textColor[color])} />
                             </div>
-                            <span className={`text-xs font-medium text-${getPriorityColor(task.priority)}`}>
+                            <span className={cn("text-xs font-medium capitalize", textColor[color])}>
                               {task.priority}
                             </span>
                           </div>

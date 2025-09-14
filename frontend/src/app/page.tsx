@@ -18,6 +18,8 @@ import {
   AlertCircle
 } from "lucide-react";
 import { ModernChart } from "@/components/charts/ModernChart";
+import { cn } from "@/lib/utils";
+import { bgTint, hoverBgTintGroup, textColor, bgSolid, type BrandColor } from "@/lib/color-variants";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -91,7 +93,15 @@ export default function DashboardPage() {
       color: "success",
       description: "recurring"
     }
-  ];
+  ] as Array<{
+    title: string;
+    value: string;
+    change: string;
+    trend: "up" | "down";
+    icon: any;
+    color: BrandColor;
+    description: string;
+  }>;
 
   // Chart Data
   const conversionData = [
@@ -148,7 +158,15 @@ export default function DashboardPage() {
       icon: AlertCircle,
       color: "warning"
     }
-  ];
+  ] as Array<{
+    id: number;
+    type: string;
+    title: string;
+    description: string;
+    time: string;
+    icon: any;
+    color: BrandColor;
+  }>;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -208,19 +226,17 @@ export default function DashboardPage() {
           animate="visible"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12"
         >
-          {kpiData.map((kpi, index) => (
+          {kpiData.map((kpi) => (
             <motion.div
               key={kpi.title}
               variants={itemVariants}
               className="card-modern p-6 group cursor-pointer hover:scale-[1.02] transition-transform duration-200"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-${kpi.color}/10 group-hover:bg-${kpi.color}/20 transition-colors duration-200`}>
-                  <kpi.icon className={`w-5 h-5 text-${kpi.color}`} />
+                <div className={cn("p-3 rounded-xl transition-colors duration-200", bgTint[kpi.color], hoverBgTintGroup[kpi.color])}>
+                  <kpi.icon className={cn("w-5 h-5", textColor[kpi.color])} />
                 </div>
-                <div className={`flex items-center gap-1 text-xs font-medium ${
-                  kpi.trend === 'up' ? 'text-success' : 'text-destructive'
-                }`}>
+                <div className={cn("flex items-center gap-1 text-xs font-medium", kpi.trend === "up" ? "text-success" : "text-destructive")}>
                   {kpi.trend === 'up' ? (
                     <ArrowUpRight className="w-3 h-3" />
                   ) : (
@@ -322,8 +338,8 @@ export default function DashboardPage() {
                     transition={{ duration: 0.15, delay: 0.6 + index * 0.05 }}
                     className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all duration-150 group cursor-pointer"
                   >
-                    <div className={`p-2 rounded-lg bg-${activity.color}/10 group-hover:bg-${activity.color}/20 transition-colors duration-200`}>
-                      <activity.icon className={`w-4 h-4 text-${activity.color}`} />
+                    <div className={cn("p-2 rounded-lg transition-colors duration-200", bgTint[activity.color], hoverBgTintGroup[activity.color])}>
+                      <activity.icon className={cn("w-4 h-4", textColor[activity.color])} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-foreground group-hover:text-primary transition-colors duration-150">
@@ -367,8 +383,8 @@ export default function DashboardPage() {
                     transition={{ duration: 0.15, delay: 0.7 + index * 0.05 }}
                     className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 hover:border-primary/20 transition-all duration-150 text-left group"
                   >
-                    <div className={`p-2 rounded-lg bg-${action.color}/10 group-hover:bg-${action.color}/20 transition-colors duration-200`}>
-                      <action.icon className={`w-4 h-4 text-${action.color}`} />
+                    <div className={cn("p-2 rounded-lg transition-colors duration-200", bgTint[action.color as BrandColor], hoverBgTintGroup[action.color as BrandColor])}>
+                      <action.icon className={cn("w-4 h-4", textColor[action.color as BrandColor])} />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-150">
@@ -400,8 +416,8 @@ export default function DashboardPage() {
                   >
                     <span className="text-sm text-muted-foreground">{item.label}</span>
                     <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full bg-${item.color}`}></div>
-                      <span className={`text-xs font-medium text-${item.color}`}>{item.status}</span>
+                      <div className={cn("w-2 h-2 rounded-full", bgSolid[item.color as BrandColor])}></div>
+                      <span className={cn("text-xs font-medium", textColor[item.color as BrandColor])}>{item.status}</span>
                     </div>
                   </motion.div>
                 ))}

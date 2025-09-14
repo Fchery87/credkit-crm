@@ -27,6 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { bgTint, textColor, type BrandColor } from "@/lib/color-variants";
 
 interface AuditLog {
   id: string;
@@ -302,7 +304,7 @@ export default function AuditLogsPage() {
                     </TableCell>
                     
                     <TableCell>
-                      <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-${actionConfig.color}/10 text-${actionConfig.color}`}>
+                      <div className={cn("inline-flex items-center gap-1 px-2 py-1 rounded-lg", bgTint[actionConfig.color as BrandColor], textColor[actionConfig.color as BrandColor])}>
                         <actionConfig.icon className="w-3 h-3" />
                         <span className="text-xs font-medium">{actionConfig.label}</span>
                       </div>
@@ -395,7 +397,7 @@ export default function AuditLogsPage() {
               className="card-modern p-6 text-center"
             >
               <p className="text-sm text-muted-foreground mb-2">{stat.label}</p>
-              <p className={`h2 text-${stat.color}`}>{stat.value}</p>
+              <p className={cn("h2", textColor[stat.color as BrandColor])}>{stat.value}</p>
             </motion.div>
           ))}
         </motion.div>

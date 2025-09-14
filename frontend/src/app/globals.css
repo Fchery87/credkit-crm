@@ -164,6 +164,10 @@
   .badge-info {
     @apply bg-info/10 text-info border border-info/20 rounded-lg px-3 py-1 text-xs font-medium;
   }
+
+  .badge-muted {
+    @apply bg-muted text-muted-foreground border border-border rounded-lg px-3 py-1 text-xs font-medium;
+  }
   
   /* Animations */
   .animate-fade-in {

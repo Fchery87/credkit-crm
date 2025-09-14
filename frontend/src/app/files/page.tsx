@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { bgTint, hoverBgTintGroup, textColor, type BrandColor } from "@/lib/color-variants";
 
 interface FileItem {
   id: string;
@@ -286,8 +288,8 @@ export default function FilesPage() {
                   >
                     {/* File Icon */}
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-xl bg-${typeColor}/10 group-hover:bg-${typeColor}/20 transition-colors duration-200`}>
-                        <FileIcon className={`w-6 h-6 text-${typeColor}`} />
+                      <div className={cn("p-3 rounded-xl transition-colors duration-200", bgTint[typeColor as BrandColor], hoverBgTintGroup[typeColor as BrandColor])}>
+                        <FileIcon className={cn("w-6 h-6", textColor[typeColor as BrandColor])} />
                       </div>
                       <button className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-muted transition-all duration-150">
                         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
@@ -379,8 +381,8 @@ export default function FilesPage() {
                         className="rounded border-border"
                       />
                       
-                      <div className={`p-2 rounded-lg bg-${typeColor}/10`}>
-                        <FileIcon className={`w-5 h-5 text-${typeColor}`} />
+                      <div className={cn("p-2 rounded-lg", bgTint[typeColor as BrandColor])}>
+                        <FileIcon className={cn("w-5 h-5", textColor[typeColor as BrandColor])} />
                       </div>
                       
                       <div className="flex-1 min-w-0">
