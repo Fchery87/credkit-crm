@@ -19,6 +19,7 @@ import {
 import { ModernChart } from "@/components/charts/ModernChart";
 import { cn } from "@/lib/utils";
 import { bgTint, hoverBgTintGroup, textColor, bgSolid, type BrandColor } from "@/lib/color-variants";
+import PageHeader from "@/components/PageHeader";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -188,25 +189,24 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header (non-sticky, relies on global Topbar) */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="h1 text-foreground">Dashboard</h1>
-          <p className="text-base text-muted-foreground mt-1">
-            Monitor your credit repair business performance
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background hover:bg-muted transition-all duration-150 text-sm font-medium">
-            <Filter className="w-4 h-4" />
-            Filter
-          </button>
-          <button className="button-primary inline-flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add Client
-          </button>
-        </div>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Dashboard"
+        subtitle="Monitor your credit repair business performance"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Dashboard" }]}
+        actions={
+          <>
+            <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background hover:bg-muted transition-all duration-150 text-sm font-medium">
+              <Filter className="w-4 h-4" />
+              Filter
+            </button>
+            <button className="button-primary inline-flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Client
+            </button>
+          </>
+        }
+      />
 
       {/* KPI Cards */}
       <motion.div
