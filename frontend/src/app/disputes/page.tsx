@@ -15,9 +15,9 @@ import {
   MoreHorizontal
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import PageHeader from "@/components/PageHeader";
 import { DataTable, type Column } from "@/components/tables/DataTable";
+import TableToolbar from "@/components/tables/TableToolbar";
 
 interface Dispute {
   id: string;
@@ -201,42 +201,26 @@ export default function DisputesPage() {
           </Button>
         }
         filters={
-          <>
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search disputes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              {[
-                { key: "all", label: "All" },
-                { key: "draft", label: "Draft" },
-                { key: "sent", label: "Sent" },
-                { key: "response", label: "Response" },
-                { key: "resolved", label: "Resolved" }
-              ].map((status) => (
-                <button
-                  key={status.key}
-                  onClick={() => setSelectedStatus(status.key)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
-                    selectedStatus === status.key
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
-            </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
-          </>
+          <TableToolbar
+            searchPlaceholder="Search disputes..."
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            chips={[
+              { key: "all", label: "All" },
+              { key: "draft", label: "Draft" },
+              { key: "sent", label: "Sent" },
+              { key: "response", label: "Response" },
+              { key: "resolved", label: "Resolved" },
+            ]}
+            selectedChip={selectedStatus}
+            onChipSelect={setSelectedStatus}
+            rightActions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
         }
       />
 

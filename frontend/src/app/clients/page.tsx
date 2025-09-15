@@ -19,9 +19,9 @@ import {
   FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import PageHeader from "@/components/PageHeader";
 import { DataTable, type Column } from "@/components/tables/DataTable";
+import TableToolbar from "@/components/tables/TableToolbar";
 
 interface Client {
   id: string;
@@ -252,36 +252,24 @@ export default function ClientsPage() {
           </>
         }
         filters={
-          <>
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search clients..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              {["all", "active", "pending"].map((view) => (
-                <button
-                  key={view}
-                  onClick={() => setViewMode(view as any)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
-                    viewMode === view
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {view.charAt(0).toUpperCase() + view.slice(1)}
-                </button>
-              ))}
-            </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
-          </>
+          <TableToolbar
+            searchPlaceholder="Search clients..."
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            chips={[
+              { key: "all", label: "All" },
+              { key: "active", label: "Active" },
+              { key: "pending", label: "Pending" },
+            ]}
+            selectedChip={viewMode}
+            onChipSelect={(key) => setViewMode(key as any)}
+            rightActions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
         }
       />
 
