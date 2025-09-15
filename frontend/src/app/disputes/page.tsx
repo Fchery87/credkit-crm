@@ -193,6 +193,7 @@ export default function DisputesPage() {
       <PageHeader
         title="Disputes"
         subtitle="Track and manage credit bureau disputes"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Disputes" }]}
         actions={
           <Button className="gap-2">
             <Plus className="w-4 h-4" />

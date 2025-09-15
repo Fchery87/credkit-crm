@@ -238,6 +238,7 @@ export default function ClientsPage() {
       <PageHeader
         title="Clients"
         subtitle="Manage your client relationships and track progress"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Clients" }]}
         actions={
           <>
             <Button variant="outline" className="gap-2">
