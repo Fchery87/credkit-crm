@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Shield,
-  Search,
   Filter,
   Download,
   Calendar,
@@ -18,7 +17,6 @@ import {
   Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -27,6 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { bgTint, textColor, type BrandColor } from "@/lib/color-variants";
+import TableToolbar from "@/components/tables/TableToolbar";
+import FilterChips from "@/components/tables/FilterChips";
 
 interface AuditLog {
   id: string;
@@ -157,16 +159,14 @@ export default function AuditLogsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-8 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded-xl w-48"></div>
-            <div className="h-12 bg-muted rounded-xl"></div>
-            <div className="space-y-2">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="h-12 bg-muted rounded-xl"></div>
-              ))}
-            </div>
+      <div className="space-y-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-muted rounded-xl w-48"></div>
+          <div className="h-12 bg-muted rounded-xl"></div>
+          <div className="space-y-2">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="h-12 bg-muted rounded-xl"></div>
+            ))}
           </div>
         </div>
       </div>
@@ -174,98 +174,83 @@ export default function AuditLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
-        <div className="container mx-auto px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="h1 text-foreground">Audit Logs</h1>
-              <p className="text-base text-muted-foreground mt-1">
-                Monitor system activity and compliance events
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2">
-                <Download className="w-4 h-4" />
-                Export Logs
-              </Button>
-            </div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <nav className="mb-2 text-sm text-muted-foreground">
+              <ol className="flex items-center gap-2">
+                <li><a href="/" className="hover:text-foreground transition-colors">Home</a></li>
+                <li className="text-muted-foreground">/</li>
+                <li className="text-foreground">Audit</li>
+              </ol>
+            </nav>
+            <h1 className="h1 text-foreground">Audit Logs</h1>
+            <p className="text-base text-muted-foreground mt-1">
+              Monitor system activity and compliance events
+            </p>
           </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search logs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            {/* Action Filter */}
-            <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-              {["all", "create", "read", "update", "delete", "login", "export"].map((action) => (
-                <button
-                  key={action}
-                  onClick={() => setSelectedAction(action)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                    selectedAction === action
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {action.charAt(0).toUpperCase() + action.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {/* Actor Filter */}
-            <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-              {["all", "admin", "manager", "user"].map((role) => (
-                <button
-                  key={role}
-                  onClick={() => setSelectedActor(role)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                    selectedActor === role
-                      ? "bg-secondary text-secondary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {/* Date Range Filter */}
-            <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-              {["1d", "7d", "30d", "90d"].map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setDateRange(range)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                    dateRange === range
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {range}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" className="gap-2">
+              <Download className="w-4 h-4" />
+              Export Logs
+            </Button>
           </div>
         </div>
-      </motion.div>
+
+        {/* Filters */}
+        <div className="space-y-3">
+          <TableToolbar
+            searchPlaceholder="Search logs..."
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            chips={[
+              { key: "all", label: "All" },
+              { key: "create", label: "Create" },
+              { key: "read", label: "Read" },
+              { key: "update", label: "Update" },
+              { key: "delete", label: "Delete" },
+              { key: "login", label: "Login" },
+              { key: "export", label: "Export" },
+            ]}
+            selectedChip={selectedAction}
+            onChipSelect={setSelectedAction}
+            rightActions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
+
+          <div className="flex items-center gap-4 flex-wrap">
+            <FilterChips
+              options={[
+                { key: "all", label: "All roles" },
+                { key: "admin", label: "Admin" },
+                { key: "manager", label: "Manager" },
+                { key: "user", label: "User" },
+              ]}
+              selected={selectedActor}
+              onSelect={setSelectedActor}
+            />
+            <FilterChips
+              options={[
+                { key: "1d", label: "1d" },
+                { key: "7d", label: "7d" },
+                { key: "30d", label: "30d" },
+                { key: "90d", label: "90d" },
+              ]}
+              selected={dateRange}
+              onSelect={setDateRange}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Audit Table */}
-      <div className="container mx-auto px-8 py-8">
+      <div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -302,7 +287,7 @@ export default function AuditLogsPage() {
                     </TableCell>
                     
                     <TableCell>
-                      <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-${actionConfig.color}/10 text-${actionConfig.color}`}>
+                      <div className={cn("inline-flex items-center gap-1 px-2 py-1 rounded-lg", bgTint[actionConfig.color as BrandColor], textColor[actionConfig.color as BrandColor])}>
                         <actionConfig.icon className="w-3 h-3" />
                         <span className="text-xs font-medium">{actionConfig.label}</span>
                       </div>
@@ -395,7 +380,7 @@ export default function AuditLogsPage() {
               className="card-modern p-6 text-center"
             >
               <p className="text-sm text-muted-foreground mb-2">{stat.label}</p>
-              <p className={`h2 text-${stat.color}`}>{stat.value}</p>
+              <p className={cn("h2", textColor[stat.color as BrandColor])}>{stat.value}</p>
             </motion.div>
           ))}
         </motion.div>
