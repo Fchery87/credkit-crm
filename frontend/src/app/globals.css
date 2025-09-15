@@ -2,51 +2,54 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Blue Primary with Teal & Purple Accents */
-    --primary: 220 91% 54%;        /* Blue 600 */
+    /* CRC-like Brand Palette */
+    /* Primary: CRC Blue (~#2C7BE5) */
+    --primary: 212 77% 54%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 220 91% 48%;   /* Blue 700 */
-    --primary-active: 220 91% 42%;  /* Blue 800 */
+    --primary-hover: 212 77% 48%;
+    --primary-active: 212 77% 42%;
     
-    --secondary: 174 72% 56%;       /* Teal 500 */
+    /* Secondary: Cyan/Teal accent for actions */
+    --secondary: 187 85% 45%;        /* ~#12B4E6 */
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 174 72% 50%;
+    --secondary-hover: 187 85% 40%;
     
-    --accent: 262 83% 58%;          /* Purple 500 */
+    /* Accent: Indigo/Purple for highlights */
+    --accent: 248 63% 58%;           /* ~#6166F5 */
     --accent-foreground: 0 0% 100%;
-    --accent-hover: 262 83% 52%;
+    --accent-hover: 248 63% 52%;
     
-    /* Neutral Slate System */
-    --background: 0 0% 100%;        /* Pure white */
-    --foreground: 215 25% 27%;      /* Slate 700 */
+    /* Neutral system (cool slate) */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 23%;       /* Slightly deeper than before */
     
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 215 25% 23%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 215 25% 23%;
     
-    --muted: 215 28% 97%;           /* Slate 50 */
-    --muted-foreground: 215 16% 47%; /* Slate 500 */
+    --muted: 215 28% 97%;
+    --muted-foreground: 215 16% 45%;
     
-    --border: 215 20% 91%;          /* Slate 200 */
-    --input: 215 20% 91%;
+    --border: 215 20% 90%;
+    --input: 215 20% 90%;
     
     /* Semantic Colors */
-    --destructive: 0 84% 60%;       /* Red 500 */
+    --destructive: 0 74% 54%;        /* Slightly calmer red */
     --destructive-foreground: 0 0% 100%;
     
-    --success: 142 76% 36%;         /* Green 600 */
+    --success: 152 61% 40%;          /* ~#16A34A emerald-ish */
     --success-foreground: 0 0% 100%;
     
-    --warning: 38 92% 50%;          /* Orange 500 */
+    --warning: 32 95% 54%;           /* Amber/Orange */
     --warning-foreground: 0 0% 100%;
     
-    --info: 199 89% 48%;            /* Sky 500 */
+    --info: 199 89% 48%;             /* Sky blue for info */
     --info-foreground: 0 0% 100%;
     
     /* Interactive States */
-    --ring: 220 91% 54%;            /* Primary blue for focus rings */
+    --ring: 212 77% 54%;
     --ring-offset: 0 0% 100%;
     
     /* Shadows */
@@ -56,23 +59,23 @@
   }
 
   .dark {
-    /* Dark Mode Colors */
-    --background: 215 28% 7%;       /* Slate 900 */
-    --foreground: 215 20% 91%;     /* Slate 200 */
+    /* Dark Mode tuned for the updated palette */
+    --background: 220 17% 9%;
+    --foreground: 0 0% 96%;
     
-    --card: 215 28% 9%;            /* Slate 800 */
-    --card-foreground: 215 20% 91%;
+    --card: 220 17% 12%;
+    --card-foreground: 0 0% 96%;
     
-    --popover: 215 28% 9%;
-    --popover-foreground: 215 20% 91%;
+    --popover: 220 17% 12%;
+    --popover-foreground: 0 0% 96%;
     
-    --muted: 215 28% 12%;          /* Slate 800 */
-    --muted-foreground: 215 16% 65%; /* Slate 400 */
+    --muted: 220 17% 16%;
+    --muted-foreground: 220 10% 70%;
     
-    --border: 215 28% 18%;         /* Slate 700 */
-    --input: 215 28% 18%;
+    --border: 220 17% 18%;
+    --input: 220 17% 18%;
     
-    --ring-offset: 215 28% 7%;
+    --ring-offset: 220 17% 9%;
   }
 }
 
