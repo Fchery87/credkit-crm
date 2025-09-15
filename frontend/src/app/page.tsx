@@ -189,6 +189,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* dev badge removed */}
       {/* Page Header */}
       <PageHeader
         title="Dashboard"

@@ -19,7 +19,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en-US" className={`${inter.variable} light`}>
       <body className={`${inter.className} antialiased`}>
         <Providers>
           <AppShell>
