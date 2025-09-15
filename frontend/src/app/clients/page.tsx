@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PageHeader from "@/components/PageHeader";
 import {
   Table,
   TableBody,
@@ -153,23 +154,14 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
-        <div className="container mx-auto px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="h1 text-foreground">Clients</h1>
-              <p className="text-base text-muted-foreground mt-1">
-                Manage your client relationships and track progress
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="space-y-6">
+        <PageHeader
+          title="Clients"
+          subtitle="Manage your client relationships and track progress"
+          actions={
+            <>
               <Button variant="outline" className="gap-2">
                 <Download className="w-4 h-4" />
                 Export
@@ -178,66 +170,66 @@ export default function ClientsPage() {
                 <Plus className="w-4 h-4" />
                 Add Client
               </Button>
-            </div>
+            </>
+          }
+        />
+
+        {/* Search and Filters */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search clients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {["all", "active", "pending"].map((view) => (
+              <button
+                key={view}
+                onClick={() => setViewMode(view as any)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
+                  viewMode === view
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                {view.charAt(0).toUpperCase() + view.slice(1)}
+              </button>
+            ))}
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search clients..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {["all", "active", "pending"].map((view) => (
-                <button
-                  key={view}
-                  onClick={() => setViewMode(view as any)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
-                    viewMode === view
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {view.charAt(0).toUpperCase() + view.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
-          </div>
-
-          {/* Bulk Actions */}
-          {selectedClients.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15 }}
-              className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between"
-            >
-              <span className="text-sm font-medium text-primary">
-                {selectedClients.length} client{selectedClients.length > 1 ? 's' : ''} selected
-              </span>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">Update Stage</Button>
-                <Button variant="outline" size="sm">Add Tags</Button>
-                <Button variant="outline" size="sm">Export</Button>
-              </div>
-            </motion.div>
-          )}
+          <Button variant="outline" size="sm" className="gap-2">
+            <Filter className="w-4 h-4" />
+            Filters
+          </Button>
         </div>
-      </motion.div>
+
+        {/* Bulk Actions */}
+        {selectedClients.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between"
+          >
+            <span className="text-sm font-medium text-primary">
+              {selectedClients.length} client{selectedClients.length > 1 ? 's' : ''} selected
+            </span>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm">Update Stage</Button>
+              <Button variant="outline" size="sm">Add Tags</Button>
+              <Button variant="outline" size="sm">Export</Button>
+            </div>
+          </motion.div>
+        )}
+      </div>
 
       {/* Table Content */}
-      <div className="container mx-auto px-8 py-8">
+      <div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

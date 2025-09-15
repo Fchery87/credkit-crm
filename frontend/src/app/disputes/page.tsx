@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PageHeader from "@/components/PageHeader";
 
 interface Dispute {
   id: string;
@@ -131,66 +132,57 @@ export default function DisputesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
-        <div className="container mx-auto px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="h1 text-foreground">Disputes</h1>
-              <p className="text-base text-muted-foreground mt-1">
-                Track and manage credit bureau disputes
-              </p>
-            </div>
+      <div className="space-y-6">
+        <PageHeader
+          title="Disputes"
+          subtitle="Track and manage credit bureau disputes"
+          actions={
             <Button className="gap-2">
               <Plus className="w-4 h-4" />
               New Dispute
             </Button>
-          </div>
+          }
+        />
 
-          {/* Search and Status Filters */}
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search disputes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {[
-                { key: "all", label: "All" },
-                { key: "draft", label: "Draft" },
-                { key: "sent", label: "Sent" },
-                { key: "response", label: "Response" },
-                { key: "resolved", label: "Resolved" }
-              ].map((status) => (
-                <button
-                  key={status.key}
-                  onClick={() => setSelectedStatus(status.key)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
-                    selectedStatus === status.key
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
-            </div>
+        {/* Search and Status Filters */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search disputes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {[
+              { key: "all", label: "All" },
+              { key: "draft", label: "Draft" },
+              { key: "sent", label: "Sent" },
+              { key: "response", label: "Response" },
+              { key: "resolved", label: "Resolved" }
+            ].map((status) => (
+              <button
+                key={status.key}
+                onClick={() => setSelectedStatus(status.key)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
+                  selectedStatus === status.key
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                {status.label}
+              </button>
+            ))}
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="container mx-auto px-8 py-8">
+      <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Disputes List */}
           <motion.div

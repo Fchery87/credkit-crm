@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { bgTint, textColor, type BrandColor } from "@/lib/color-variants";
+import PageHeader from "@/components/PageHeader";
 
 interface Task {
   id: string;
@@ -191,38 +192,27 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
-        <div className="container mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="h1 text-foreground">Task Pipeline</h1>
-              <p className="text-base text-muted-foreground mt-1">
-                Manage tasks across your workflow stages
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2">
-                <Plus className="w-4 h-4" />
-                Add Column
-              </Button>
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" />
-                New Task
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <PageHeader
+        title="Task Pipeline"
+        subtitle="Manage tasks across your workflow stages"
+        actions={
+          <>
+            <Button variant="outline" className="gap-2">
+              <Plus className="w-4 h-4" />
+              Add Column
+            </Button>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              New Task
+            </Button>
+          </>
+        }
+      />
 
       {/* Kanban Board */}
-      <div className="container mx-auto px-8 py-8">
+      <div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
