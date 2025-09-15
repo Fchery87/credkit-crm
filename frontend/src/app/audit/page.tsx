@@ -179,6 +179,13 @@ export default function AuditLogsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
+            <nav className="mb-2 text-sm text-muted-foreground">
+              <ol className="flex items-center gap-2">
+                <li><a href="/" className="hover:text-foreground transition-colors">Home</a></li>
+                <li className="text-muted-foreground">/</li>
+                <li className="text-foreground">Audit</li>
+              </ol>
+            </nav>
             <h1 className="h1 text-foreground">Audit Logs</h1>
             <p className="text-base text-muted-foreground mt-1">
               Monitor system activity and compliance events

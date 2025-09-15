@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PageHeader from "@/components/PageHeader";
 
 interface ClientData {
   name: string;
@@ -150,23 +151,22 @@ export default function ClientPortalPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="h1 text-foreground">Welcome back, {clientData.name.split(' ')[0]}</h1>
-          <p className="text-base text-muted-foreground mt-2">
-            Track your credit repair progress and manage your account
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="badge-success">
-            {clientData.status}
-          </span>
-          <Button variant="outline" className="gap-2">
-            <MessageSquare className="w-4 h-4" />
-            Contact Support
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={`Welcome back, ${clientData.name.split(' ')[0]}`}
+        subtitle="Track your credit repair progress and manage your account"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Client Portal" }]}
+        actions={
+          <div className="flex items-center gap-3">
+            <span className="badge-success">
+              {clientData.status}
+            </span>
+            <Button variant="outline" className="gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Contact Support
+            </Button>
+          </div>
+        }
+      />
 
       <div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

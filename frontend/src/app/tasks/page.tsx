@@ -197,6 +197,7 @@ export default function TasksPage() {
       <PageHeader
         title="Task Pipeline"
         subtitle="Manage tasks across your workflow stages"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Tasks" }]}
         actions={
           <>
             <Button variant="outline" className="gap-2">

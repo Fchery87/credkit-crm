@@ -164,14 +164,11 @@ export default function FilesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="h1 text-foreground">Files & Documents</h1>
-            <p className="text-base text-muted-foreground mt-1">
-              Manage client documents and file uploads
-            </p>
-          </div>
+      <PageHeader
+        title="Files & Documents"
+        subtitle="Manage client documents and file uploads"
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Files" }]}
+        actions={
           <div className="flex items-center gap-3">
             <div className="flex items-center border border-border rounded-xl p-1">
               <button
@@ -196,25 +193,21 @@ export default function FilesPage() {
               Upload Files
             </Button>
           </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search files..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Filter className="w-4 h-4" />
-            Filters
-          </Button>
-        </div>
-      </div>
+        }
+        filters={
+          <TableToolbar
+            searchPlaceholder="Search files..."
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            rightActions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
+        }
+      />
 
       <div>
         {/* Upload Dropzone */}
