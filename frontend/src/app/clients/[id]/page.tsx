@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
@@ -10,6 +10,7 @@ import { BadgeCheck, Calendar, Mail, Phone, User, CreditCard, FileText, CheckSqu
 export default function ClientDetailsPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Demo data; replace with fetch by id
   const client = useMemo(() => ({
@@ -25,6 +26,13 @@ export default function ClientDetailsPage() {
     documents: 12,
   }), [id]);
 
+  const tabLabel =
+    activeTab === "overview" ? "Overview" :
+    activeTab === "disputes" ? "Disputes" :
+    activeTab === "documents" ? "Documents" :
+    activeTab === "tasks" ? "Tasks" :
+    activeTab === "billing" ? "Billing" : "";
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -33,7 +41,8 @@ export default function ClientDetailsPage() {
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Clients", href: "/clients" },
-          { label: client.name },
+          { label: client.name, href: `/clients/${client.id}` },
+          { label: tabLabel },
         ]}
         actions={
           <>
@@ -96,7 +105,7 @@ export default function ClientDetailsPage() {
 
         {/* Main tabs */}
         <div className="lg:col-span-3">
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-muted/30 p-1 rounded-xl">
               <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
               <TabsTrigger value="disputes" className="rounded-lg">Disputes</TabsTrigger>
