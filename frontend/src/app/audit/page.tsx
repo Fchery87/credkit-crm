@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Shield,
-  Search,
   Filter,
   Download,
   Calendar,
@@ -18,7 +17,6 @@ import {
   Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -29,6 +27,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { bgTint, textColor, type BrandColor } from "@/lib/color-variants";
+import TableToolbar from "@/components/tables/TableToolbar";
+import FilterChips from "@/components/tables/FilterChips";
 
 interface AuditLog {
   id: string;
@@ -159,16 +159,14 @@ export default function AuditLogsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-8 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded-xl w-48"></div>
-            <div className="h-12 bg-muted rounded-xl"></div>
-            <div className="space-y-2">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="h-12 bg-muted rounded-xl"></div>
-              ))}
-            </div>
+      <div className="space-y-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-muted rounded-xl w-48"></div>
+          <div className="h-12 bg-muted rounded-xl"></div>
+          <div className="space-y-2">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="h-12 bg-muted rounded-xl"></div>
+            ))}
           </div>
         </div>
       </div>
@@ -195,66 +193,51 @@ export default function AuditLogsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search logs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+        <div className="space-y-3">
+          <TableToolbar
+            searchPlaceholder="Search logs..."
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            chips={[
+              { key: "all", label: "All" },
+              { key: "create", label: "Create" },
+              { key: "read", label: "Read" },
+              { key: "update", label: "Update" },
+              { key: "delete", label: "Delete" },
+              { key: "login", label: "Login" },
+              { key: "export", label: "Export" },
+            ]}
+            selectedChip={selectedAction}
+            onChipSelect={setSelectedAction}
+            rightActions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+              </Button>
+            }
+          />
+
+          <div className="flex items-center gap-4 flex-wrap">
+            <FilterChips
+              options={[
+                { key: "all", label: "All roles" },
+                { key: "admin", label: "Admin" },
+                { key: "manager", label: "Manager" },
+                { key: "user", label: "User" },
+              ]}
+              selected={selectedActor}
+              onSelect={setSelectedActor}
             />
-          </div>
-          
-          {/* Action Filter */}
-          <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-            {["all", "create", "read", "update", "delete", "login", "export"].map((action) => (
-              <button
-                key={action}
-                onClick={() => setSelectedAction(action)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                  selectedAction === action
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                {action.charAt(0).toUpperCase() + action.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* Actor Filter */}
-          <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-            {["all", "admin", "manager", "user"].map((role) => (
-              <button
-                key={role}
-                onClick={() => setSelectedActor(role)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                  selectedActor === role
-                    ? "bg-secondary text-secondary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* Date Range Filter */}
-          <div className="flex items-center gap-1 border border-border rounded-xl p-1">
-            {["1d", "7d", "30d", "90d"].map((range) => (
-              <button
-                key={range}
-                onClick={() => setDateRange(range)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-150 ${
-                  dateRange === range
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                {range}
-              </button>
-            ))}
+            <FilterChips
+              options={[
+                { key: "1d", label: "1d" },
+                { key: "7d", label: "7d" },
+                { key: "30d", label: "30d" },
+                { key: "90d", label: "90d" },
+              ]}
+              selected={dateRange}
+              onSelect={setDateRange}
+            />
           </div>
         </div>
       </div>
