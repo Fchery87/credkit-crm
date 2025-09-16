@@ -67,7 +67,7 @@ export const useTasks = () => {
       });
 
       const endpoint = `/api/v1/tasks/?${queryParams.toString()}`;
-      const data = await apiClient.makeRequest(endpoint, {}, token);
+      const data = await apiClient.makeRequest(endpoint);
       setTasks(data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch tasks');
@@ -86,7 +86,7 @@ export const useTasks = () => {
       const data = await apiClient.makeRequest('/api/v1/tasks/', {
         method: 'POST',
         body: JSON.stringify(taskData),
-      }, token);
+      });
 
       // Add to local state
       setTasks(prev => [data, ...prev]);
@@ -109,7 +109,7 @@ export const useTasks = () => {
       const data = await apiClient.makeRequest(`/api/v1/tasks/${taskId}`, {
         method: 'PUT',
         body: JSON.stringify(updateData),
-      }, token);
+      });
 
       // Update local state
       setTasks(prev => prev.map(task =>
@@ -133,7 +133,7 @@ export const useTasks = () => {
     try {
       await apiClient.makeRequest(`/api/v1/tasks/${taskId}`, {
         method: 'DELETE',
-      }, token);
+      });
 
       // Remove from local state
       setTasks(prev => prev.filter(task => task.id !== taskId));
@@ -156,7 +156,7 @@ export const useTasks = () => {
       const data = await apiClient.makeRequest('/api/v1/tasks/bulk-update', {
         method: 'POST',
         body: JSON.stringify(updates),
-      }, token);
+      });
 
       // Refresh tasks to get updated data
       await fetchTasks();
@@ -179,7 +179,7 @@ export const useTasks = () => {
       const data = await apiClient.makeRequest('/api/v1/tasks/bulk-delete', {
         method: 'POST',
         body: JSON.stringify({ task_ids: taskIds }),
-      }, token);
+      });
 
       // Remove from local state
       setTasks(prev => prev.filter(task => !taskIds.includes(task.id)));

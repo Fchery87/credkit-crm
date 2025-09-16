@@ -57,7 +57,7 @@ export const useClients = () => {
       });
 
       const endpoint = `/api/v1/clients/?${queryParams.toString()}`;
-      const data = await apiClient.makeRequest(endpoint, {}, token);
+      const data = await apiClient.makeRequest(endpoint);
       setClients(data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch clients');
@@ -76,7 +76,7 @@ export const useClients = () => {
       const data = await apiClient.makeRequest('/api/v1/clients/', {
         method: 'POST',
         body: JSON.stringify(clientData),
-      }, token);
+      });
 
       // Add to local state
       setClients(prev => [data, ...prev]);
@@ -99,7 +99,7 @@ export const useClients = () => {
       const data = await apiClient.makeRequest(`/api/v1/clients/${clientId}`, {
         method: 'PUT',
         body: JSON.stringify(updateData),
-      }, token);
+      });
 
       // Update local state
       setClients(prev => prev.map(client =>
@@ -123,7 +123,7 @@ export const useClients = () => {
     try {
       await apiClient.makeRequest(`/api/v1/clients/${clientId}`, {
         method: 'DELETE',
-      }, token);
+      });
 
       // Remove from local state
       setClients(prev => prev.filter(client => client.id !== clientId));
@@ -146,7 +146,7 @@ export const useClients = () => {
       const data = await apiClient.makeRequest('/api/v1/clients/bulk-update', {
         method: 'POST',
         body: JSON.stringify(updates),
-      }, token);
+      });
 
       // Refresh clients to get updated data
       await fetchClients();
