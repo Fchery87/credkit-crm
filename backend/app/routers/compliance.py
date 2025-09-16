@@ -4,7 +4,7 @@ from typing import Optional, List
 from datetime import datetime, timedelta
 
 from app.database import get_db
-from app.auth.security import get_current_active_user
+from app.security import get_current_active_user
 from ..models.user import User
 from ..models.audit_log import AuditLog, DataAccessLog, ComplianceEvent, AuditAction, AuditResourceType
 from ..middleware.audit import ComplianceLogger

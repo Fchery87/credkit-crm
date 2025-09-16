@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 from app.database import get_db
-from app.auth.security import get_current_active_user
+from app.security import get_current_active_user
 from ..models.user import User
 from ..models.subscription import Subscription, Invoice, SubscriptionStatus, PlanType
 from ..schemas.billing import CheckoutSessionCreate, SubscriptionResponse, InvoiceResponse

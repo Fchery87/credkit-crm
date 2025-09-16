@@ -1,101 +1,89 @@
 # CredKit CRM - SaaS Credit Repair Management System
 
-A comprehensive, enterprise-grade CRM system designed specifically for credit repair companies. Built with modern technologies and scalable architecture to manage clients, disputes, tasks, and automate workflows.
+A comprehensive CRM built for credit repair companies. It manages clients, disputes, tasks, and automates workflows with a modern, scalable architecture.
 
-## 🚀 Features
+## Features
 
-### Core CRM Functionality
-- **Client Management**: Complete client lifecycle from lead to completion
-- **Task Management**: Kanban board with priorities, assignments, and due dates
-- **Dispute Tracking**: Credit bureau dispute management with status tracking
-- **Pipeline Management**: Customizable stages and automated workflows
-- **Real-time Dashboard**: Live KPIs, analytics, and performance metrics
+- Client management with full lifecycle from lead to completion
+- Task management (Kanban, priorities, assignees, due dates)
+- Dispute tracking with statuses and pipelines
+- Customizable stages and automated workflows
+- Real-time dashboard and live updates (WebSocket)
+- Multi-tenant architecture with data isolation
+- Role-based access control (Admin, Manager, User)
+- Document management (S3-compatible storage) and e-signatures
+- Stripe billing, Email/SMS notifications, audit logging
+- Interactive API docs via Swagger/OpenAPI
 
-### Enterprise Features
-- **Multi-tenant Architecture**: Complete data isolation between organizations
-- **Role-based Access Control**: Admin, Manager, and User roles with granular permissions
-- **Real-time Updates**: WebSocket integration for live data synchronization
-- **Document Management**: S3-compatible storage with secure sharing
-- **E-signature Integration**: DocuSign integration for contract signing
+## Architecture
 
-### Integrations & Services
-- **Stripe Billing**: Subscription management with usage-based pricing
-- **Email/SMS Notifications**: Postmark and Twilio integration
-- **Audit Logging**: Comprehensive compliance and GDPR support
-- **API Documentation**: Interactive OpenAPI/Swagger documentation
+- Frontend: Next.js 15, TypeScript, TailwindCSS, shadcn/ui
+- Backend: FastAPI, SQLAlchemy 2.x, Pydantic v2
+- Data: PostgreSQL (db) and Redis (cache/sessions)
+- Infra: Docker + Docker Compose, GitHub Actions CI/CD
 
-## 🏗️ Architecture
-
-### Technology Stack
-- **Frontend**: Next.js 15, TypeScript, TailwindCSS, shadcn/ui
-- **Backend**: FastAPI, SQLAlchemy 2.0, Pydantic v2
-- **Database**: PostgreSQL with Redis for caching
-- **Infrastructure**: Docker, GitHub Actions CI/CD
-
-### System Architecture
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Next.js 15    │    │   FastAPI       │    │   PostgreSQL    │
-│   Frontend      │◄──►│   Backend       │◄──►│   Database      │
-│   (Port 3000)   │    │   (Port 8000)   │    │   (Port 5432)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                    ┌─────────────────┐
-                    │     Redis       │
-                    │   Cache/Sessions│
-                    │   (Port 6379)   │
-                    └─────────────────┘
-```
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js 18+ (for local development)
-- Python 3.11+ (for local development)
+- Node.js 18+ (optional for local frontend without Docker)
+- Python 3.11+ (optional for local backend without Docker)
 
-### Development Setup
-
-1. **Clone the repository**
+### Setup
+1. Clone the repository
    ```bash
    git clone <repository-url>
    cd credkit_crm
    ```
 
-2. **Environment Configuration**
-   ```bash
-   # Copy environment files
-   cp .env.example .env
-   cp frontend/.env.example frontend/.env.local
-   
-   # Configure your environment variables
-   # See Environment Variables section below
+2. Backend environment (create `backend/.env`)
+   ```env
+   # When using Docker Compose, use these service hostnames
+   DATABASE_URL=postgresql://user:password@db:5432/credkit_db
+   REDIS_URL=redis://redis:6379
+
+   # Security
+   SECRET_KEY=change-me
+   ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+   # Optional integrations (see full list below)
+   FRONTEND_URL=http://localhost:3000
    ```
 
-3. **Start with Docker**
+3. Frontend environment (edit `frontend/.env.local`)
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   NEXT_PUBLIC_WS_URL=ws://localhost:8000
+   ```
+
+4. Start with Docker
    ```bash
    docker-compose up --build
    ```
 
-4. **Access the application**
+5. Access the app
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/docs
+   - API docs: http://localhost:8000/docs
    - Login: http://localhost:3000/login
+
+6. (Optional) Seed demo data
+   ```bash
+   docker compose exec backend python -m app.seed_data
+   ```
 
 ### Demo Credentials
 ```
-Admin: admin@demo.com / admin123
+Admin:   admin@demo.com   / admin123
 Manager: manager@demo.com / manager123
-Agent: agent@demo.com / agent123
+Agent:   agent@demo.com   / agent123
 ```
 
-## 🔧 Environment Variables
+## Environment Variables
 
-### Backend (.env)
+### Backend (`backend/.env`)
 ```env
-# Database
+# Database (local dev outside Docker: use localhost)
 DATABASE_URL=postgresql://user:password@localhost/credkit_db
 REDIS_URL=redis://localhost:6379
 
@@ -131,190 +119,62 @@ DOCUSIGN_ACCOUNT_ID=your-account-id
 DOCUSIGN_PRIVATE_KEY=your-private-key
 DOCUSIGN_BASE_PATH=https://demo.docusign.net/restapi
 
-# Security
+# App
 ADMIN_ALLOWED_IPS=127.0.0.1,::1
 FRONTEND_URL=http://localhost:3000
 ```
 
-### Frontend (.env.local)
+### Frontend (`frontend/.env.local`)
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_WS_URL=ws://localhost:8000
 ```
 
-## 📚 API Documentation
+## API Documentation
 
-### Authentication Endpoints
-```
-POST /api/v1/auth/register     # User registration
-POST /api/v1/auth/token        # Login
-GET  /api/v1/auth/users/me     # Get current user
-```
+- OpenAPI UI: http://localhost:8000/docs
+- Extended docs: `docs/API.md`
+- Mounted routers: auth, clients, disputes, tenants, tasks, tags, stages, reminders, automations, documents, billing, compliance, ws.
 
-### Core Resources
-```
-# Clients
-GET    /api/v1/clients/        # List clients (with filtering)
-POST   /api/v1/clients/        # Create client
-PUT    /api/v1/clients/{id}    # Update client
-DELETE /api/v1/clients/{id}    # Delete client
+## Testing
 
-# Tasks
-GET    /api/v1/tasks/          # List tasks (with filtering)
-POST   /api/v1/tasks/          # Create task
-PUT    /api/v1/tasks/{id}      # Update task
-DELETE /api/v1/tasks/{id}      # Delete task
-
-# Disputes
-GET    /api/v1/disputes/       # List disputes
-POST   /api/v1/disputes/       # Create dispute
-PUT    /api/v1/disputes/{id}   # Update dispute
-DELETE /api/v1/disputes/{id}   # Delete dispute
-```
-
-### Advanced Features
-```
-# Document Management
-POST   /api/v1/documents/upload           # Upload document
-GET    /api/v1/documents/                 # List documents
-GET    /api/v1/documents/{id}/download    # Download document
-POST   /api/v1/documents/{id}/share       # Create share link
-
-# Billing
-POST   /api/v1/billing/create-checkout-session  # Create Stripe checkout
-GET    /api/v1/billing/subscription              # Get subscription
-GET    /api/v1/billing/usage                     # Get usage stats
-
-# Compliance
-GET    /api/v1/compliance/audit-logs      # Get audit logs
-POST   /api/v1/compliance/export-audit-data  # Export audit data
-POST   /api/v1/compliance/gdpr-request    # Handle GDPR requests
-```
-
-## 🧪 Testing
-
-### Backend Tests
+### Backend tests
+Run locally:
 ```bash
 cd backend
+pip install -r requirements.txt
 pip install pytest pytest-asyncio httpx
-pytest tests/ -v
+pytest -v
 ```
 
-### Frontend Tests
+Or with Docker:
 ```bash
-cd frontend
-npm install
-npm test
+docker compose exec backend pytest -v
 ```
 
-### Integration Tests
-```bash
-# Run full test suite
-docker-compose -f docker-compose.test.yml up --build
-```
+### Frontend tests
+Frontend tests are not configured yet (no `npm test` script). Consider adding Jest/Vitest or Next Test and a `test` script in `frontend/package.json`.
 
-## 🚀 Deployment
+## Database Migrations (Alembic)
 
-### Production Environment
-1. **Configure production environment variables**
-2. **Set up production database and Redis**
-3. **Configure external services (Stripe, S3, etc.)**
-4. **Deploy using Docker Compose or Kubernetes**
-
-### Docker Production
-```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Database Migrations
 ```bash
 # Run migrations
-cd backend
-alembic upgrade head
+docker compose exec backend alembic upgrade head
 
-# Create new migration
-alembic revision --autogenerate -m "Description"
+# Create a new migration (edit models first)
+docker compose exec backend alembic revision --autogenerate -m "Description"
 ```
 
-## 🔒 Security Features
+## Deployment
 
-### Authentication & Authorization
+- Ensure production environment variables are set (database, Redis, secrets, integrations).
+- Build images using the provided Dockerfiles under `backend/` and `frontend/`.
+- Run backend with a production server (e.g., Uvicorn/Gunicorn) and configure CORS.
+- Serve the Next.js production build using the `frontend/Dockerfile` runner stage.
+
+## Security Features
+
 - JWT-based authentication with secure token handling
 - Role-based access control (RBAC) with granular permissions
 - Multi-tenant data isolation
-- Session management with Redis
-
-### Data Protection
-- Encrypted document storage
-- Audit logging for all operations
-- GDPR compliance tools
-- Input validation and sanitization
-
-### Infrastructure Security
-- Security headers middleware
-- Rate limiting and DDoS protection
-- IP whitelisting for admin endpoints
-- Webhook signature verification
-
-## 📊 Monitoring & Analytics
-
-### Performance Monitoring
-- Request timing and slow query detection
-- Redis caching for improved performance
-- Database connection pooling
-- Response compression
-
-### Business Analytics
-- Client acquisition metrics
-- Task completion rates
-- Revenue and subscription analytics
-- User activity tracking
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-### Code Standards
-- Follow PEP 8 for Python code
-- Use TypeScript for frontend development
-- Write comprehensive tests
-- Document API changes
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-### Documentation
-- API Documentation: http://localhost:8000/docs
-- Frontend Components: Built with shadcn/ui
-- Database Schema: See `/backend/app/models/`
-
-### Getting Help
-- Create an issue for bugs or feature requests
-- Check the documentation for common questions
-- Review the test files for usage examples
-
-## 🎯 Roadmap
-
-### Upcoming Features
-- Advanced reporting and analytics
-- Mobile application
-- Third-party integrations (CRM, accounting)
-- Advanced automation workflows
-- Machine learning for credit analysis
-
----
-
-**Built with ❤️ for the credit repair industry**
+- Redis-backed session/state where applicable

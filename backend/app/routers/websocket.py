@@ -1,5 +1,5 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from ..auth.security import get_current_user
+from ..security import get_current_user
 from ..models.user import User
 import json
 import asyncio

@@ -1,7 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import auth, clients, disputes, tenants
+from .routers import (
+    auth,
+    clients,
+    disputes,
+    tenants,
+    tasks,
+    tags,
+    stages,
+    reminders,
+    automations,
+    documents,
+    billing,
+    websocket,
+)
 
 app = FastAPI(
     title="CredKit CRM API",
@@ -49,6 +62,14 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(clients.router, prefix="/api/v1/clients", tags=["clients"])
 app.include_router(disputes.router, prefix="/api/v1/disputes", tags=["disputes"])
 app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
+app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
+app.include_router(tags.router, prefix="/api/v1/tags", tags=["tags"])
+app.include_router(stages.router, prefix="/api/v1/stages", tags=["stages"])
+app.include_router(reminders.router, prefix="/api/v1/reminders", tags=["reminders"])
+app.include_router(automations.router, prefix="/api/v1/automations", tags=["automations"])
+app.include_router(documents.router, prefix="/api/v1/documents", tags=["documents"])
+app.include_router(billing.router, prefix="/api/v1/billing", tags=["billing"])
+app.include_router(websocket.router, prefix="/api/v1", tags=["ws"])
 
 
 @app.get("/api/v1/health")

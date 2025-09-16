@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta
 
 from app.database import get_db
-from app.auth.security import get_current_active_user
+from app.security import get_current_active_user
 from ..models.user import User
 from ..models.document import Document, DocumentType, DocumentStatus
 from ..services.storage import storage_service
