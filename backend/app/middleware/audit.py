@@ -112,7 +112,7 @@ class AuditMiddleware:
                     request_method=request.method,
                     request_path=request.url.path,
                     description=f"{request.method} {request.url.path} - {status_code}",
-                    metadata={
+                    event_metadata={
                         "status_code": status_code,
                         "processing_time": processing_time,
                         "query_params": dict(request.query_params),

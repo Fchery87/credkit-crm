@@ -13,6 +13,7 @@ from .routers import (
     automations,
     documents,
     billing,
+    compliance,
     websocket,
 )
 
@@ -69,6 +70,7 @@ app.include_router(reminders.router, prefix="/api/v1/reminders", tags=["reminder
 app.include_router(automations.router, prefix="/api/v1/automations", tags=["automations"])
 app.include_router(documents.router, prefix="/api/v1/documents", tags=["documents"])
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["billing"])
+app.include_router(compliance.router, prefix="/api/v1/compliance", tags=["compliance"])
 app.include_router(websocket.router, prefix="/api/v1", tags=["ws"])
 
 

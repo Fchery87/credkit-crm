@@ -62,7 +62,7 @@ class AuditLog(Base):
     
     # Additional context
     description = Column(Text)
-    metadata = Column(JSON)    # Additional context-specific data
+    event_metadata = Column(JSON)    # Additional context-specific data
     
     # Compliance fields
     is_sensitive = Column(Boolean, default=False)  # Mark sensitive data access

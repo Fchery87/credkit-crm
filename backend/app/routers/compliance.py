@@ -249,7 +249,7 @@ async def export_audit_data(
                     "resource_id": log.resource_id,
                     "ip_address": log.ip_address,
                     "description": log.description,
-                    "metadata": log.metadata
+                    "metadata": log.event_metadata
                 }
                 for log in audit_logs
             ],
