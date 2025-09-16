@@ -38,7 +38,10 @@ export default function PageHeader({
                   return (
                     <li key={`${crumb.label}-${idx}`} className="flex items-center gap-2">
                       {crumb.href && !isLast ? (
-                        <Link href={crumb.href} className="hover:text-foreground transition-colors">
+                        <Link
+                          href={{ pathname: crumb.href }}
+                          className="hover:text-foreground transition-colors"
+                        >
                           {crumb.label}
                         </Link>
                       ) : (

@@ -1,9 +1,11 @@
+/// <reference types="vitest" />
+
+import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import { jest } from '@jest/globals'
+import { describe, it, expect, vi } from 'vitest'
 import DashboardPage from '../page'
 
-// Mock the hooks and components
-jest.mock('@/contexts/auth-context', () => ({
+vi.mock('@/contexts/auth-context', () => ({
   useAuth: () => ({
     user: {
       id: '1',
@@ -17,16 +19,16 @@ jest.mock('@/contexts/auth-context', () => ({
   })
 }))
 
-jest.mock('@/contexts/websocket-context', () => ({
+vi.mock('@/contexts/websocket-context', () => ({
   useWebSocket: () => ({
     isConnected: true,
-    subscribe: jest.fn()
+    subscribe: vi.fn()
   })
 }))
 
-jest.mock('@/lib/api-client', () => ({
+vi.mock('@/lib/api-client', () => ({
   apiClient: {
-    getTasks: jest.fn().mockResolvedValue([
+    getTasks: vi.fn().mockResolvedValue([
       {
         id: '1',
         title: 'Test Task',
@@ -36,7 +38,7 @@ jest.mock('@/lib/api-client', () => ({
         created_at: '2024-01-10'
       }
     ]),
-    getClients: jest.fn().mockResolvedValue([
+    getClients: vi.fn().mockResolvedValue([
       {
         id: '1',
         first_name: 'John',
@@ -48,47 +50,44 @@ jest.mock('@/lib/api-client', () => ({
   }
 }))
 
-jest.mock('@/components/protected-route', () => ({
+vi.mock('@/components/protected-route', () => ({
   ProtectedRoute: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }))
 
 describe('Dashboard Page', () => {
-  it('renders dashboard title', async () => {
+  it('renders dashboard title after loading', async () => {
     render(<DashboardPage />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Credit Repair CRM Dashboard')).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
     })
   })
 
-  it('displays KPI cards', async () => {
+  it('displays KPI cards with key metrics', async () => {
     render(<DashboardPage />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Active Clients')).toBeInTheDocument()
-      expect(screen.getByText('Open Tasks')).toBeInTheDocument()
-      expect(screen.getByText('Tasks Due Today')).toBeInTheDocument()
-      expect(screen.getByText('System Status')).toBeInTheDocument()
+      expect(screen.getByText('Disputes Open')).toBeInTheDocument()
+      expect(screen.getByText('Monthly Revenue')).toBeInTheDocument()
     })
   })
 
-  it('shows getting started guide', async () => {
+  it('shows recent activity section', async () => {
     render(<DashboardPage />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Getting Started')).toBeInTheDocument()
-      expect(screen.getByText('1. Register/Login')).toBeInTheDocument()
-      expect(screen.getByText('2. Add Your First Client')).toBeInTheDocument()
-      expect(screen.getByText('3. Create Tasks')).toBeInTheDocument()
-      expect(screen.getByText('4. Monitor Progress')).toBeInTheDocument()
+      expect(screen.getByText('Recent Activity')).toBeInTheDocument()
+      expect(screen.getByText('New client added')).toBeInTheDocument()
     })
   })
 
-  it('displays system ready message', async () => {
+  it('shows quick actions and system health panels', async () => {
     render(<DashboardPage />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText(/Your CRM system is ready/)).toBeInTheDocument()
+      expect(screen.getByText('Quick Actions')).toBeInTheDocument()
+      expect(screen.getByText('System Health')).toBeInTheDocument()
     })
   })
 })
