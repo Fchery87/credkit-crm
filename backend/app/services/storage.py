@@ -1,11 +1,11 @@
 import boto3
 import uuid
 import os
-from typing import Optional, BinaryIO
+from typing import Optional
 from botocore.exceptions import ClientError
 from fastapi import UploadFile, HTTPException
 import mimetypes
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class S3StorageService:
     def __init__(self):

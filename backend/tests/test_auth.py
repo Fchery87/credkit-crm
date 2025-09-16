@@ -4,9 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.database import get_db, Base
-from app.models.user import User
-from app.models.tenant import Tenant
-from app.models.organization import Organization
+from app.models.user import User  # noqa: F401
+from app.models.tenant import Tenant  # noqa: F401
+from app.models.organization import Organization  # noqa: F401
 
 # Test database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

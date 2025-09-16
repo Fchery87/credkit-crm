@@ -2,7 +2,6 @@ import os
 from typing import Optional, Dict, Any
 from twilio.rest import Client as TwilioClient
 from postmark import PMMail
-from fastapi import HTTPException
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ class EmailService:
             )
             
             # Send email
-            response = email.send()
+            email.send()
             
             logger.info(f"Email sent successfully to {to_email}")
             return True

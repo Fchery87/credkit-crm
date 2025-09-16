@@ -20,12 +20,12 @@ if config.config_file_name is not None:
 # This allows alembic to find the 'app' module
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.database import Base
-from app.config import settings
+from app.database import Base  # noqa: E402
+from app.config import settings  # noqa: E402
 
 # Import all models here so that Base has them registered
-from app.models.user import User
-from app.models.organization import Organization
+from app.models.user import User  # noqa: F401
+from app.models.organization import Organization  # noqa: F401
 
 target_metadata = Base.metadata
 

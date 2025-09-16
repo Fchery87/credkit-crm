@@ -1,8 +1,7 @@
 import os
 import base64
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 from docusign_esign import ApiClient, EnvelopesApi, EnvelopeDefinition, Document, Signer, SignHere, Tabs, Recipients
-from docusign_esign.client.auth.oauth import OAuthToken
 from fastapi import HTTPException
 import logging
 

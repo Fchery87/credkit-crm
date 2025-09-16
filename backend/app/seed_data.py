@@ -1,8 +1,6 @@
 """
 Seed data for CredKit CRM development and demo purposes
 """
-import asyncio
-from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.user import User
 from app.models.tenant import Tenant
@@ -14,7 +12,6 @@ from app.models.stage import Stage
 from app.models.tag import Tag
 from app.security import get_password_hash
 from datetime import datetime, timedelta
-import uuid
 
 
 def create_seed_data():

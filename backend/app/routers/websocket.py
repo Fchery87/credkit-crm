@@ -1,6 +1,4 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from ..security import get_current_user
-from ..models.user import User
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import json
 import asyncio
 from typing import Dict, Set
