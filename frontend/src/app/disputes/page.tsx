@@ -271,10 +271,3 @@ export default function DisputesPage() {
     </div>
   );
 }
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-}

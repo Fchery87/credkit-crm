@@ -398,5 +398,6 @@ export default function FilesPage() {
           </motion.div>
         )}
       </div>
+    </div>
   );
 }
