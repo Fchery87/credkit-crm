@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 from typing import Dict, Any
 import stripe
 import os
@@ -197,7 +196,7 @@ async def get_current_subscription(
     """Get current tenant's subscription"""
     subscription = db.query(Subscription).filter(
         Subscription.tenant_id == current_user.tenant_id,
-        Subscription.is_active == True
+        Subscription.is_active.is_(True)
     ).first()
     
     if not subscription:
@@ -231,7 +230,7 @@ async def cancel_subscription(
     
     subscription = db.query(Subscription).filter(
         Subscription.tenant_id == current_user.tenant_id,
-        Subscription.is_active == True
+        Subscription.is_active.is_(True)
     ).first()
     
     if not subscription:
@@ -260,7 +259,7 @@ async def get_usage_stats(
     """Get current usage statistics"""
     subscription = db.query(Subscription).filter(
         Subscription.tenant_id == current_user.tenant_id,
-        Subscription.is_active == True
+        Subscription.is_active.is_(True)
     ).first()
     
     if not subscription:
@@ -269,7 +268,7 @@ async def get_usage_stats(
     # Calculate current usage
     active_users = db.query(User).filter(
         User.tenant_id == current_user.tenant_id,
-        User.is_active == True
+        User.is_active.is_(True)
     ).count()
     
     return {

@@ -24,8 +24,8 @@ from app.database import Base  # noqa: E402
 from app.config import settings  # noqa: E402
 
 # Import all models here so that Base has them registered
-from app.models.user import User  # noqa: F401
-from app.models.organization import Organization  # noqa: F401
+from app.models.user import User  # noqa: E402,F401
+from app.models.organization import Organization  # noqa: E402,F401
 
 target_metadata = Base.metadata
 

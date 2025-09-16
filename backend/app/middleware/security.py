@@ -1,10 +1,7 @@
 import os
-import hashlib
-import hmac
 import time
 from fastapi import Request, Response, HTTPException
 from fastapi.middleware.base import BaseHTTPMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import logging
 from typing import Callable
 import re

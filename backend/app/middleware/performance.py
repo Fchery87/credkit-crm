@@ -2,7 +2,6 @@ import time
 import logging
 from fastapi import Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
-import redis
 import json
 from typing import Callable
 

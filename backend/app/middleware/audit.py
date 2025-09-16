@@ -1,11 +1,8 @@
-import json
 import time
 import asyncio
-from fastapi import Request, Response
-from fastapi.routing import APIRoute
-from sqlalchemy.orm import Session
-from typing import Callable, Any
 import logging
+
+from fastapi import Request
 
 from ..models.audit_log import AuditLog, AuditAction, AuditResourceType
 from ..database import SessionLocal
@@ -36,7 +33,7 @@ class AuditMiddleware:
                     body = await request.body()
                     if body:
                         request_body = body.decode('utf-8')
-                except:
+                except Exception:
                     request_body = None
             
             # Process request
