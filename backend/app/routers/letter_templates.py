@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -157,8 +157,9 @@ def archive_letter_template(
     current_user: User = Depends(get_current_active_user),
 ):
     template = _get_template(db, current_user.tenant_id, template_id)
-    template.deleted_at = datetime.utcnow()
+    template.deleted_at = datetime.now(timezone.utc)
     template.is_active = False
 
     db.commit()
     return None
+

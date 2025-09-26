@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
 from app.security import get_current_active_user
@@ -290,5 +290,7 @@ async def handle_gdpr_request(
         "message": f"GDPR {request_type} request logged and will be processed within 30 days",
         "request_type": request_type,
         "client_email": client_email,
-        "estimated_completion": (datetime.utcnow() + timedelta(days=30)).isoformat()
+        "estimated_completion": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
     }
+
+

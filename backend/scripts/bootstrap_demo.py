@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database import SessionLocal
 from app.models.client import Client
@@ -14,7 +14,7 @@ from app.seed_data import clear_seed_data, create_seed_data
 
 
 DEMO_SNAPSHOT = {
-    "generated_at": datetime.utcnow().isoformat(),
+    "generated_at": datetime.now(timezone.utc).isoformat(),
     "tradelines": [
         {
             "account_ref": "ACC-BOOT-001",
@@ -125,11 +125,17 @@ def main(force: bool = False) -> None:
             % (document.id, client.first_name, client.last_name)
         )
 
-        suggestions, run = generate_dispute_suggestions(
-            db,
-            tenant_id=tenant.id,
-            client_id=client.id,
-        )
+        try:
+            suggestions, run = generate_dispute_suggestions(
+                db,
+                tenant_id=tenant.id,
+                client_id=client.id,
+            )
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+
         print(f"Generated {len(suggestions)} suggestions (run {run.id})")
     finally:
         db.close()

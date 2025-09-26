@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 from .. import schemas
 from ..models import Reminder
 from app.database import get_db
@@ -37,7 +38,6 @@ def list_reminders(
     limit: int = 50,
     offset: int = 0
 ):
-    from datetime import datetime
     query = db.query(Reminder).filter(Reminder.tenant_id == current_user.tenant_id)
 
     # Apply filters
@@ -46,7 +46,7 @@ def list_reminders(
     if reminder_type:
         query = query.filter(Reminder.reminder_type == reminder_type)
     if upcoming_only:
-        query = query.filter(Reminder.scheduled_at > datetime.utcnow())
+        query = query.filter(Reminder.scheduled_at > datetime.now(timezone.utc))
 
     # Apply sorting
     sort_column = getattr(Reminder, sort_by, Reminder.scheduled_at)
@@ -107,3 +107,4 @@ def delete_reminder(reminder_id: str, db: Session = Depends(get_db), current_use
     db.delete(reminder)
     db.commit()
     return {"message": "Reminder deleted successfully"}
+

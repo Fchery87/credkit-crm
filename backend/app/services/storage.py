@@ -5,7 +5,7 @@ from typing import Optional
 from botocore.exceptions import ClientError
 from fastapi import UploadFile, HTTPException
 import mimetypes
-from datetime import datetime
+from datetime import datetime, timezone
 
 class S3StorageService:
     def __init__(self):
@@ -54,7 +54,7 @@ class S3StorageService:
                     'tenant_id': tenant_id,
                     'document_type': document_type,
                     'original_filename': file.filename or 'unknown',
-                    'uploaded_at': datetime.utcnow().isoformat()
+                    'uploaded_at': datetime.now(timezone.utc).isoformat()
                 }
             )
             
@@ -102,7 +102,7 @@ class S3StorageService:
             metadata.update({
                 'tenant_id': tenant_id,
                 'document_type': document_type,
-                'uploaded_at': datetime.utcnow().isoformat()
+                'uploaded_at': datetime.now(timezone.utc).isoformat()
             })
 
             response = self.s3_client.put_object(
@@ -194,3 +194,5 @@ class S3StorageService:
 
 # Global storage service instance
 storage_service = S3StorageService()
+
+

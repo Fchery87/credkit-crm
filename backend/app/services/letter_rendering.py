@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 import markdown
@@ -22,7 +22,7 @@ code{background-color:#f4f4f4;padding:0.2rem 0.4rem;border-radius:4px;}
 
 def _build_environment() -> Environment:
     env = Environment(autoescape=False, undefined=StrictUndefined)
-    env.globals.setdefault("now", datetime.utcnow)
+    env.globals.setdefault("now", lambda: datetime.now(timezone.utc))
     return env
 
 
@@ -43,7 +43,7 @@ class LetterRenderer:
     def render(self, *, template: str, context: Dict[str, Any]) -> LetterRenderResult:
         enriched_context = {
             **context,
-            "current_date": datetime.utcnow().strftime("%B %d, %Y"),
+            "current_date": datetime.now(timezone.utc).strftime("%B %d, %Y"),
         }
 
         try:
@@ -74,3 +74,4 @@ class LetterRenderer:
 def render_letter(*, template: str, context: Dict[str, Any]) -> LetterRenderResult:
     renderer = LetterRenderer()
     return renderer.render(template=template, context=context)
+

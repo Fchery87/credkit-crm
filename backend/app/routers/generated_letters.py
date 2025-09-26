@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -132,7 +132,7 @@ def create_generated_letter(
     )
 
     db.add(letter)
-    case.last_activity_at = datetime.utcnow()
+    case.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(letter)
     return letter
@@ -196,14 +196,14 @@ def update_generated_letter(
     if "status" in data:
         new_status = data["status"]
         if new_status == GeneratedLetterStatus.SENT and not data.get("sent_at"):
-            data["sent_at"] = datetime.utcnow()
+            data["sent_at"] = datetime.now(timezone.utc)
         if new_status == GeneratedLetterStatus.DELIVERED and not data.get("delivered_at"):
-            data["delivered_at"] = datetime.utcnow()
+            data["delivered_at"] = datetime.now(timezone.utc)
 
     for field, value in data.items():
         setattr(letter, field, value)
 
-    case.last_activity_at = datetime.utcnow()
+    case.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(letter)
     return letter
@@ -219,8 +219,9 @@ def archive_generated_letter(
     case = _get_case(db, current_user.tenant_id, case_id)
     letter = _get_letter(db, current_user.tenant_id, case_id, letter_id)
 
-    letter.deleted_at = datetime.utcnow()
+    letter.deleted_at = datetime.now(timezone.utc)
     case.last_activity_at = letter.deleted_at
 
     db.commit()
     return None
+

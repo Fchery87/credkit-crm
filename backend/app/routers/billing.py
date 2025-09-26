@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Dict, Any
 import stripe
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database import get_db
 from app.security import get_current_active_user
@@ -159,7 +159,7 @@ async def handle_invoice_payment_succeeded(invoice_data: Dict[str, Any], db: Ses
     if invoice:
         invoice.status = "paid"
         invoice.amount_paid = invoice_data['amount_paid'] / 100  # Convert from cents
-        invoice.paid_at = datetime.utcnow()
+        invoice.paid_at = datetime.now(timezone.utc)
         db.commit()
 
 
@@ -280,3 +280,4 @@ async def get_usage_stats(
         "letter_credits_remaining": subscription.letter_credits_included - subscription.letter_credits_used,
         "current_period_end": subscription.current_period_end
     }
+

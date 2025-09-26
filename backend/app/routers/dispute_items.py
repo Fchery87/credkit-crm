@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -96,7 +96,7 @@ def create_dispute_item(
     )
 
     db.add(dispute_item)
-    case.last_activity_at = datetime.utcnow()
+    case.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(dispute_item)
     return dispute_item
@@ -157,7 +157,7 @@ def update_dispute_item(
         updated = True
 
     if updated:
-        case.last_activity_at = datetime.utcnow()
+        case.last_activity_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(item)
@@ -174,8 +174,9 @@ def archive_dispute_item(
     case = _get_case(db, current_user.tenant_id, case_id)
     item = _get_item(db, current_user.tenant_id, case_id, item_id)
 
-    item.deleted_at = datetime.utcnow()
+    item.deleted_at = datetime.now(timezone.utc)
     case.last_activity_at = item.deleted_at
 
     db.commit()
     return None
+

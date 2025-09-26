@@ -31,12 +31,19 @@ def get_dispute_suggestions(
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
 
-    suggestions, run = generate_dispute_suggestions(
-        db,
-        tenant_id=current_user.tenant_id,
-        client_id=client_id,
-    )
+    try:
+        suggestions, run = generate_dispute_suggestions(
+            db,
+            tenant_id=current_user.tenant_id,
+            client_id=client_id,
+        )
+        run_id = run.id
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
     return DisputeSuggestionsResponse(
         suggestions=[DisputeSuggestion(**payload) for payload in suggestions],
-        run_id=str(run.id),
+        run_id=str(run_id),
     )

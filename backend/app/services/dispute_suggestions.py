@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from uuid import UUID
 
@@ -17,7 +17,7 @@ from app.models.suggestion_run import (
 
 def utc_now() -> datetime:
     """Tiny indirection to enable monkeypatching in tests."""
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 class SuggestionCollector:
@@ -76,7 +76,12 @@ class DisputeSuggestionService:
         self.db = db
         self.tenant_id = tenant_id
         self.client_id = client_id
-        self.as_of = as_of or utc_now()
+        base_as_of = as_of or utc_now()
+        if base_as_of.tzinfo is None:
+            base_as_of = base_as_of.replace(tzinfo=timezone.utc)
+        else:
+            base_as_of = base_as_of.astimezone(timezone.utc)
+        self.as_of = base_as_of
         self.collector = SuggestionCollector()
 
     # Public -----------------------------------------------------------------
@@ -158,7 +163,7 @@ class DisputeSuggestionService:
         run.created_at = self.as_of
         run.updated_at = self.as_of
         self.db.add(run)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(run)
         return run
 
@@ -450,4 +455,12 @@ def generate_dispute_suggestions(
 ) -> Tuple[List[Dict[str, Any]], SuggestionRunModel]:
     service = DisputeSuggestionService(db, tenant_id, client_id, as_of=as_of)
     return service.generate()
+
+
+
+
+
+
+
+
 

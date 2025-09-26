@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -91,7 +91,7 @@ def create_suggestion_run(
 
     started_at = payload.started_at
     if payload.status == SuggestionRunStatus.RUNNING and started_at is None:
-        started_at = datetime.utcnow()
+        started_at = datetime.now(timezone.utc)
 
     suggestion_run = SuggestionRunModel(
         tenant_id=case.tenant_id,
@@ -111,7 +111,7 @@ def create_suggestion_run(
     )
 
     db.add(suggestion_run)
-    case.last_activity_at = datetime.utcnow()
+    case.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(suggestion_run)
     return suggestion_run
@@ -199,14 +199,14 @@ def update_suggestion_run(
     data = payload.dict(exclude_unset=True)
 
     if "status" in data and data["status"] == SuggestionRunStatus.COMPLETED:
-        data.setdefault("completed_at", datetime.utcnow())
+        data.setdefault("completed_at", datetime.now(timezone.utc))
     if "status" in data and data["status"] == SuggestionRunStatus.RUNNING:
-        data.setdefault("started_at", datetime.utcnow())
+        data.setdefault("started_at", datetime.now(timezone.utc))
 
     for field, value in data.items():
         setattr(run, field, value)
 
-    case.last_activity_at = datetime.utcnow()
+    case.last_activity_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(run)
     return run
@@ -231,8 +231,9 @@ def archive_suggestion_run(
         raise HTTPException(status_code=404, detail="Suggestion run not found")
 
     case = _get_case(db, current_user.tenant_id, run.case_id)
-    run.deleted_at = datetime.utcnow()
+    run.deleted_at = datetime.now(timezone.utc)
     case.last_activity_at = run.deleted_at
 
     db.commit()
     return None
+

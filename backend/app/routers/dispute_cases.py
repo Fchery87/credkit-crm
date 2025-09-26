@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -66,7 +66,7 @@ def create_dispute_case(
     if existing:
         raise HTTPException(status_code=400, detail="Case number already in use")
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     opened_at = payload.opened_at or now
 
     dispute_case = DisputeCaseModel(
@@ -178,7 +178,7 @@ def update_dispute_case(
         updated = True
 
     if updated:
-        dispute_case.last_activity_at = datetime.utcnow()
+        dispute_case.last_activity_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(dispute_case)
@@ -192,7 +192,7 @@ def archive_dispute_case(
     current_user: User = Depends(get_current_active_user),
 ):
     dispute_case = _get_case(db, current_user.tenant_id, case_id)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     dispute_case.deleted_at = now
     if dispute_case.status != DisputeCaseStatus.ARCHIVED:
@@ -216,3 +216,4 @@ def archive_dispute_case(
 
     db.commit()
     return None
+

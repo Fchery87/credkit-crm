@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 import uuid
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
 from app.security import get_current_active_user
@@ -199,7 +199,7 @@ async def create_document_share(
     
     # Generate share token
     share_token = str(uuid.uuid4())
-    expires_at = datetime.utcnow() + timedelta(hours=expires_hours)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=expires_hours)
     
     # Create document share record
     from ..models.document import DocumentShare
@@ -251,7 +251,7 @@ async def access_shared_document(
         raise HTTPException(status_code=404, detail="Invalid share link")
     
     # Check expiration
-    if document_share.expires_at and datetime.utcnow() > document_share.expires_at:
+    if document_share.expires_at and datetime.now(timezone.utc) > document_share.expires_at:
         raise HTTPException(status_code=410, detail="Share link has expired")
     
     # Check download limit
@@ -279,7 +279,7 @@ async def access_shared_document(
         
         # Update access tracking
         document_share.download_count += 1
-        document_share.last_accessed = datetime.utcnow()
+        document_share.last_accessed = datetime.now(timezone.utc)
         db.commit()
         
         return {
@@ -291,3 +291,4 @@ async def access_shared_document(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to access document: {str(e)}")
+
