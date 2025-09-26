@@ -74,6 +74,61 @@ class S3StorageService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Upload error: {str(e)}")
     
+    def upload_bytes(
+        self,
+        *,
+        content: bytes,
+        tenant_id: str,
+        document_type: str,
+        filename: str | None = None,
+        client_id: Optional[str] = None,
+        content_type: str | None = None,
+        metadata: Optional[dict] = None,
+    ) -> dict:
+        """Upload raw bytes to S3 and return metadata"""
+        try:
+            file_extension = ""
+            if filename:
+                file_extension = os.path.splitext(filename)[1]
+            unique_filename = filename or f"{uuid.uuid4()}{file_extension}"
+
+            s3_key = f"tenants/{tenant_id}/{document_type}/"
+            if client_id:
+                s3_key += f"clients/{client_id}/"
+            s3_key += unique_filename
+
+            mime_type = content_type or (mimetypes.guess_type(filename)[0] if filename else None) or "application/pdf"
+            metadata = metadata or {}
+            metadata.update({
+                'tenant_id': tenant_id,
+                'document_type': document_type,
+                'uploaded_at': datetime.utcnow().isoformat()
+            })
+
+            response = self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=s3_key,
+                Body=content,
+                ContentType=mime_type,
+                Metadata=metadata
+            )
+
+            return {
+                'filename': unique_filename,
+                'original_filename': filename or unique_filename,
+                'file_size': len(content),
+                'mime_type': mime_type,
+                's3_bucket': self.bucket_name,
+                's3_key': s3_key,
+                's3_etag': response['ETag'].strip('"'),
+                's3_url': f"s3://{self.bucket_name}/{s3_key}"
+            }
+
+        except ClientError as e:
+            raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Upload error: {str(e)}")
+
     def generate_presigned_url(
         self,
         s3_key: str,

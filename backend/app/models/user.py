@@ -33,3 +33,6 @@ class User(Base):
 
     # Additional relationships
     reminders = relationship("Reminder", back_populates="user")
+    uploaded_documents = relationship("Document", back_populates="uploader")
+    audit_logs = relationship("AuditLog", back_populates="user")
+

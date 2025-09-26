@@ -73,7 +73,14 @@ jobs:
         cd backend
         pip install mypy
         mypy app --ignore-missing-imports
-    
+
+    - name: Run migrations
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      run: |
+        cd backend
+        python -m scripts.manage migrate
+
     - name: Run tests
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
@@ -228,3 +235,4 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+

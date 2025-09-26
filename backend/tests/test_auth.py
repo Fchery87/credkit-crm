@@ -4,6 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.database import get_db, Base
+
+from .utils import strip_postgres_casts
 from app.models.user import User  # noqa: F401
 from app.models.tenant import Tenant  # noqa: F401
 from app.models.organization import Organization  # noqa: F401
@@ -24,6 +26,7 @@ app.dependency_overrides[get_db] = override_get_db
 
 @pytest.fixture(scope="module")
 def client():
+    strip_postgres_casts(Base.metadata)
     Base.metadata.create_all(bind=engine)
     with TestClient(app) as c:
         yield c

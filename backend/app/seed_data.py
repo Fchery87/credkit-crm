@@ -7,11 +7,19 @@ from app.models.tenant import Tenant
 from app.models.organization import Organization
 from app.models.client import Client
 from app.models.task import Task, TaskPriority, TaskStatus
+from app.services.letter_templates_seed import seed_system_templates
 from app.models.dispute import Dispute, DisputeStatus
 from app.models.stage import Stage
 from app.models.tag import Tag
-from app.security import get_password_hash
+from app.models.audit_log import AuditLog
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def _hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
 
 
 def create_seed_data():
@@ -42,7 +50,7 @@ def create_seed_data():
         # 3. Create Demo Users
         admin_user = User(
             email="admin@demo.com",
-            hashed_password=get_password_hash("admin123"),
+            hashed_password=_hash_password("admin123"),
             first_name="Admin",
             last_name="User",
             role="admin",
@@ -53,7 +61,7 @@ def create_seed_data():
         
         manager_user = User(
             email="manager@demo.com",
-            hashed_password=get_password_hash("manager123"),
+            hashed_password=_hash_password("manager123"),
             first_name="Manager",
             last_name="Smith",
             role="manager",
@@ -64,7 +72,7 @@ def create_seed_data():
         
         agent_user = User(
             email="agent@demo.com",
-            hashed_password=get_password_hash("agent123"),
+            hashed_password=_hash_password("agent123"),
             first_name="Agent",
             last_name="Johnson",
             role="user",
@@ -78,7 +86,10 @@ def create_seed_data():
         db.refresh(admin_user)
         db.refresh(manager_user)
         db.refresh(agent_user)
-        
+
+        # Seed system letter templates
+        seed_system_templates(db, demo_tenant.id)
+
         # 4. Create Pipeline Stages
         stages = [
             Stage(name="Lead", description="Initial contact", order=1, color="#3B82F6", tenant_id=demo_tenant.id),
@@ -231,12 +242,12 @@ def create_seed_data():
         db.add_all(disputes)
         db.commit()
         
-        print("✅ Seed data created successfully!")
-        print("\n🔐 Demo Login Credentials:")
+        print("[seed] Seed data created successfully!")
+        print("\n[seed] Demo Login Credentials:")
         print("Admin: admin@demo.com / admin123")
         print("Manager: manager@demo.com / manager123")
         print("Agent: agent@demo.com / agent123")
-        print("\n📊 Sample Data Created:")
+        print("\n[seed] Sample Data Created:")
         print(f"- {len(clients)} sample clients")
         print(f"- {len(tasks)} sample tasks")
         print(f"- {len(disputes)} sample disputes")
@@ -244,7 +255,7 @@ def create_seed_data():
         print(f"- {len(tags)} client tags")
         
     except Exception as e:
-        print(f"❌ Error creating seed data: {str(e)}")
+        print(f"[seed] Error creating seed data: {e}")
         db.rollback()
         raise
     finally:
@@ -276,12 +287,12 @@ def clear_seed_data():
                 db.delete(demo_org)
             
             db.commit()
-            print("✅ Seed data cleared successfully!")
+            print("[seed] Seed data cleared successfully!")
         else:
             print("No seed data found to clear.")
             
     except Exception as e:
-        print(f"❌ Error clearing seed data: {str(e)}")
+        print(f"[seed] Error clearing seed data: {e}")
         db.rollback()
         raise
     finally:
@@ -295,3 +306,12 @@ if __name__ == "__main__":
         clear_seed_data()
     else:
         create_seed_data()
+
+
+
+
+
+
+
+
+

@@ -5,6 +5,12 @@ from .routers import (
     auth,
     clients,
     disputes,
+    dispute_suggestions,
+    dispute_cases,
+    dispute_items,
+    generated_letters,
+    letter_templates,
+    suggestion_runs,
     tenants,
     tasks,
     tags,
@@ -62,6 +68,12 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(clients.router, prefix="/api/v1/clients", tags=["clients"])
 app.include_router(disputes.router, prefix="/api/v1/disputes", tags=["disputes"])
+app.include_router(dispute_suggestions.router)
+app.include_router(dispute_cases.router, prefix="/api/v1/dispute-cases", tags=["dispute-cases"])
+app.include_router(dispute_items.router, prefix="/api/v1/dispute-cases/{case_id}/items", tags=["dispute-items"])
+app.include_router(generated_letters.router, prefix="/api/v1/dispute-cases/{case_id}/letters", tags=["generated-letters"])
+app.include_router(letter_templates.router, prefix="/api/v1/letter-templates", tags=["letter-templates"])
+app.include_router(suggestion_runs.router, prefix="/api/v1/suggestion-runs", tags=["suggestion-runs"])
 app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(tags.router, prefix="/api/v1/tags", tags=["tags"])

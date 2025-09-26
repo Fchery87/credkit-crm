@@ -67,9 +67,10 @@ A comprehensive CRM built for credit repair companies. It manages clients, dispu
    - API docs: http://localhost:8000/docs
    - Login: http://localhost:3000/login
 
-6. (Optional) Seed demo data
+6. (Optional) Apply migrations and seed demo data (these run automatically during `docker compose up` but are handy when you need to reseed)
    ```bash
-   docker compose exec backend python -m app.seed_data
+   docker compose exec backend python -m scripts.manage migrate
+   docker compose exec backend python -m scripts.manage bootstrap-demo
    ```
 
 ### Demo Credentials
@@ -134,6 +135,7 @@ NEXT_PUBLIC_WS_URL=ws://localhost:8000
 
 - OpenAPI UI: http://localhost:8000/docs
 - Extended docs: `docs/API.md`
+- Credit report data contract: `docs/CREDIT_REPORT_SCHEMA.md`
 - Mounted routers: auth, clients, disputes, tenants, tasks, tags, stages, reminders, automations, documents, billing, compliance, ws.
 
 ## Testing
@@ -142,8 +144,9 @@ NEXT_PUBLIC_WS_URL=ws://localhost:8000
 Run locally:
 ```bash
 cd backend
-pip install -r requirements.txt
-pip install pytest pytest-asyncio httpx
+python -m venv .venv  # optional but recommended
+source .venv/bin/activate  # on Windows use: .\.venv\Scripts\activate
+pip install -r requirements-dev.txt
 pytest -v
 ```
 
@@ -159,11 +162,19 @@ Frontend tests are not configured yet (no `npm test` script). Consider adding Je
 
 ```bash
 # Run migrations
-docker compose exec backend alembic upgrade head
+docker compose exec backend python -m scripts.manage migrate
 
 # Create a new migration (edit models first)
 docker compose exec backend alembic revision --autogenerate -m "Description"
+
+# Seed demo tenant data
+docker compose exec backend python -m scripts.manage seed-demo
+
+# Bootstrap demo data with snapshot and suggestions
+docker compose exec backend python -m scripts.manage bootstrap-demo
 ```
+
+The `python -m scripts.manage` helper centralizes migration and demo seeding. Run `python -m scripts.manage --help` to review commands and pass `--force` when you need to reset the demo dataset before reseeding.
 
 ## Deployment
 
@@ -178,3 +189,5 @@ docker compose exec backend alembic revision --autogenerate -m "Description"
 - Role-based access control (RBAC) with granular permissions
 - Multi-tenant data isolation
 - Redis-backed session/state where applicable
+
+

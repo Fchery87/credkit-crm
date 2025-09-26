@@ -6,12 +6,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 
+
 class DisputeStatus(enum.Enum):
     DRAFT = "draft"
     QUEUED = "queued"
     SENT = "sent"
     RESOLVED = "resolved"
     CLOSED = "closed"
+
 
 class Dispute(Base):
     __tablename__ = "disputes"
@@ -26,3 +28,5 @@ class Dispute(Base):
 
     tenant = relationship("Tenant", back_populates="disputes")
     client = relationship("Client", back_populates="disputes")
+    documents = relationship("Document", back_populates="dispute")
+

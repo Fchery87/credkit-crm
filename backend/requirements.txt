@@ -9,6 +9,7 @@ redis
 python-dotenv
 alembic
 passlib[bcrypt]
+bcrypt<4
 python-jose[cryptography]
 stripe
 boto3
@@ -16,3 +17,6 @@ twilio
 postmark
 docusign-esign
 python-multipart
+Jinja2==3.1.4
+Markdown==3.6
+WeasyPrint==62.3

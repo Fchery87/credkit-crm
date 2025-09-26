@@ -3,6 +3,11 @@ from .tenant import *  # noqa: F401,F403
 from .organization import *  # noqa: F401,F403
 from .client import *  # noqa: F401,F403
 from .dispute import *  # noqa: F401,F403
+from .dispute_case import *  # noqa: F401,F403
+from .dispute_item import *  # noqa: F401,F403
+from .generated_letter import *  # noqa: F401,F403
+from .letter_template import *  # noqa: F401,F403
+from .suggestion_run import *  # noqa: F401,F403
 from .task import *  # noqa: F401,F403
 from .tag import *  # noqa: F401,F403
 from .client_tag import *  # noqa: F401,F403
