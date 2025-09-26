@@ -6,15 +6,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, Calendar, Mail, Phone, User, CreditCard, FileText, CheckSquare, Folder } from "lucide-react";
+import DisputeSuggestionsPanel from "@/components/disputes/DisputeSuggestionsPanel";
 
 export default function ClientDetailsPage() {
   const params = useParams<{ id: string }>();
-  const id = params?.id;
+  const rawId = params?.id;
+  const clientId = Array.isArray(rawId) ? rawId[0] : rawId;
   const [activeTab, setActiveTab] = useState("overview");
 
   // Demo data; replace with fetch by id
   const client = useMemo(() => ({
-    id,
+    id: clientId ?? "--",
     name: "Sarah Johnson",
     email: "sarah.j@email.com",
     phone: "+1 (555) 0123",
@@ -41,7 +43,7 @@ export default function ClientDetailsPage() {
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Clients", href: "/clients" },
-          { label: client.name, href: `/clients/${client.id}` },
+          { label: client.name, href: clientId ? `/clients/${clientId}` : "#" },
           { label: tabLabel },
         ]}
         actions={
@@ -123,14 +125,19 @@ export default function ClientDetailsPage() {
             </TabsContent>
 
             <TabsContent value="disputes">
-              <div className="card-modern p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <h3 className="h4">Client Disputes</h3>
+              <div className="space-y-4">
+                <div className="card-modern p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <h3 className="h4">Client Disputes</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Review active disputes, letters, and system recommendations for this client.
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Integrate the client-specific disputes table here.
-                </p>
+                <div className="card-modern p-6">
+                  <DisputeSuggestionsPanel clientId={clientId} />
+                </div>
               </div>
             </TabsContent>
 

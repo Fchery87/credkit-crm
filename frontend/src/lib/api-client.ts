@@ -122,6 +122,11 @@ class ApiClient {
     });
   }
 
+  async getDisputeSuggestions(clientId: string): Promise<any> {
+    const query = new URLSearchParams({ client_id: clientId });
+    return this.makeRequest(`/api/disputes/suggestions?${query.toString()}`);
+  }
+
   // Analytics
   async getAnalytics(): Promise<any> {
     return this.makeRequest('/api/v1/analytics/');
