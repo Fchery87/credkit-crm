@@ -68,10 +68,30 @@ export default function ClientsPage() {
   };
 
   const filteredClients = useMemo(() => {
+    const normalizedSearch = searchTerm.toLowerCase();
+    const digitsSearch = searchTerm.replace(/\\D+/g, "");
+
     return clients.filter((client) => {
-      const matchesSearch =
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesName = client.name.toLowerCase().includes(normalizedSearch);
+      const emailValue = client.email ? client.email.toLowerCase() : "";
+      const emailMaskedValue = client.emailMasked ? client.emailMasked.toLowerCase() : "";
+      const matchesEmail = normalizedSearch
+        ? emailValue.includes(normalizedSearch) || emailMaskedValue.includes(normalizedSearch)
+        : false;
+      const phoneValue = client.phone ?? "";
+      const phoneMaskedValue = client.phoneMasked ? client.phoneMasked.toLowerCase() : "";
+      const matchesPhone =
+        (digitsSearch ? phoneValue.includes(digitsSearch) : false) ||
+        (normalizedSearch ? phoneMaskedValue.includes(normalizedSearch) : false);
+      const matchesTags = normalizedSearch
+        ? client.tags.some((tag) => tag.toLowerCase().includes(normalizedSearch))
+        : false;
+      const matchesSource = normalizedSearch
+        ? (client.source ? client.source.toLowerCase().includes(normalizedSearch) : false)
+        : false;
+      const matchesSearch = normalizedSearch
+        ? matchesName || matchesEmail || matchesPhone || matchesTags || matchesSource
+        : true;
       const matchesView = viewMode === "all" || client.status === viewMode;
       return matchesSearch && matchesView;
     });
@@ -136,18 +156,23 @@ export default function ClientsPage() {
     {
       key: "email",
       label: "Contact",
-      render: (_value, item) => (
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Mail className="w-3 h-3" />
-            {item.email}
+      render: (_value, item) => {
+        const phoneFallback = item.phone && item.phone.length >= 4 ? "***-***-" + item.phone.slice(-4) : "Not provided";
+        const emailDisplay = item.emailMasked ?? item.email ?? "Not provided";
+        const phoneDisplay = item.phoneMasked ?? phoneFallback;
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Mail className="w-3 h-3" />
+              {emailDisplay}
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Phone className="w-3 h-3" />
+              {phoneDisplay}
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Phone className="w-3 h-3" />
-            {item.phone}
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: "stage",
@@ -159,7 +184,14 @@ export default function ClientsPage() {
             : item.status === "pending"
             ? "badge-warning"
             : "badge-muted";
-        return <span className={badgeClass}>{item.stage}</span>;
+        return (
+          <div className="space-y-1">
+            <span className={"text-sm font-medium " + badgeClass}>
+              {item.stage}
+            </span>
+            <p className="text-xs text-muted-foreground capitalize">{item.status}</p>
+          </div>
+        );
       },
     },
     {
@@ -228,7 +260,8 @@ export default function ClientsPage() {
       <PageHeader
         title="Clients"
         subtitle="Manage your client relationships and track progress"
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Clients" }]}
+        breadcrumbs={[{ label: "Home", href: "/" },
+    { label: "Clients" }]}
         actions={
           <>
             <Button variant="outline" className="gap-2">
@@ -248,8 +281,8 @@ export default function ClientsPage() {
             onSearchChange={setSearchTerm}
             chips={[
               { key: "all", label: "All" },
-              { key: "active", label: "Active" },
-              { key: "pending", label: "Pending" },
+    { key: "active", label: "Active" },
+    { key: "pending", label: "Pending" },
             ]}
             selectedChip={viewMode}
             onChipSelect={(key) => setViewMode(key as typeof viewMode)}
@@ -322,3 +355,14 @@ export default function ClientsPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+

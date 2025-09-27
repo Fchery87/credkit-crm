@@ -135,9 +135,16 @@ const userResults: SearchItem[] = [
 const clientResults: SearchItem[] = SAMPLE_CLIENTS.map((client) => ({
   id: client.id,
   title: client.name,
-  description: `${client.email} - ${client.stage}`,
+  description: `${client.emailMasked ?? client.email ?? "Contact hidden"} - ${client.stage}`,
   href: `/clients/${client.id}`,
-  keywords: [client.email, client.phone, client.stage, ...(client.tags ?? [])].filter(Boolean) as string[],
+  keywords: [
+    client.email,
+    client.emailMasked,
+    client.phone,
+    client.phoneMasked,
+    client.stage,
+    ...(client.tags ?? []),
+  ].filter(Boolean) as string[],
 }));
 
 const catalog: Record<SearchCategory, SearchItem[]> = {

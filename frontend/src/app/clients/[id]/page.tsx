@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -6,22 +5,92 @@ import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Calendar, Mail, Phone, User, CreditCard, FileText, CheckSquare, Folder } from "lucide-react";
+import {
+  BadgeCheck,
+  Calendar,
+  CalendarDays,
+  Mail,
+  Phone,
+  User,
+  CreditCard,
+  FileText,
+  CheckSquare,
+  Folder,
+  MapPin,
+  Fingerprint,
+} from "lucide-react";
 import DisputeSuggestionsPanel from "@/components/disputes/DisputeSuggestionsPanel";
-import { SAMPLE_CLIENTS, getClientRoster, subscribeToClientRoster, type ClientRecord } from "@/lib/client-directory";
+import {
+  SAMPLE_CLIENTS,
+  getClientRoster,
+  subscribeToClientRoster,
+  type ClientRecord,
+} from "@/lib/client-directory";
 
 type ClientProfile = {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  status: string;
+  emailDisplay: string;
+  phoneDisplay: string;
+  status: ClientRecord["status"];
+  statusLabel: string;
   joined: string;
   plan: string;
   disputes: number;
   tasks: number;
   documents: number;
+  address?: string;
+  source?: string;
+  dob?: string;
+  dobLabel?: string;
+  last4SsnMasked?: string;
 };
+
+const mapStatus = (status: ClientRecord["status"]): string => {
+  switch (status) {
+    case "inactive":
+      return "Inactive";
+    case "pending":
+      return "Pending";
+    default:
+      return "Active";
+  }
+};
+
+const formatDob = (dob?: string) => {
+  if (!dob) return undefined;
+  const parsed = new Date(dob);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+  return parsed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const fallbackPhoneDisplay = (phone?: string) => {
+  if (!phone || phone.length < 4) return "Not provided";
+  return "***-***-" + phone.slice(-4);
+};
+
+const mapRecordToProfile = (record: ClientRecord): ClientProfile => ({
+  id: record.id,
+  name: record.name,
+  emailDisplay: record.emailMasked ?? record.email ?? "Not provided",
+  phoneDisplay: record.phoneMasked ?? fallbackPhoneDisplay(record.phone ?? undefined),
+  status: record.status,
+  statusLabel: mapStatus(record.status),
+  joined: record.joinDate,
+  plan: record.stage,
+  disputes: record.disputes,
+  tasks: record.tasks,
+  documents: record.documents ?? 0,
+  address: record.address,
+  source: record.source,
+  dob: record.dob,
+  dobLabel: formatDob(record.dob),
+  last4SsnMasked: record.last4SsnMasked,
+});
 
 export default function ClientDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -40,41 +109,28 @@ export default function ClientDetailsPage() {
   const client = useMemo<ClientProfile>(() => {
     const match = clientId ? clients.find((record) => record.id === clientId) : undefined;
     if (match) {
-      return {
-        id: match.id,
-        name: match.name,
-        email: match.email,
-        phone: match.phone,
-        status: match.status === "inactive" ? "Inactive" : match.status === "pending" ? "Pending" : "Active",
-        joined: match.joinDate,
-        plan: match.stage,
-        disputes: match.disputes,
-        tasks: match.tasks,
-        documents: (match as { documents?: number }).documents ?? 0,
-      };
+      return mapRecordToProfile(match);
     }
 
-    const fallback = SAMPLE_CLIENTS[0];
+    const fallback = mapRecordToProfile(SAMPLE_CLIENTS[0]);
     return {
+      ...fallback,
       id: clientId ?? fallback.id,
-      name: fallback.name,
-      email: fallback.email,
-      phone: fallback.phone,
-      status: fallback.status === "inactive" ? "Inactive" : fallback.status === "pending" ? "Pending" : "Active",
-      joined: fallback.joinDate,
-      plan: fallback.stage,
-      disputes: fallback.disputes,
-      tasks: fallback.tasks,
-      documents: (fallback as { documents?: number }).documents ?? 0,
     };
   }, [clients, clientId]);
 
   const tabLabel =
-    activeTab === "overview" ? "Overview" :
-    activeTab === "disputes" ? "Disputes" :
-    activeTab === "documents" ? "Documents" :
-    activeTab === "tasks" ? "Tasks" :
-    activeTab === "billing" ? "Billing" : "";
+    activeTab === "overview"
+      ? "Overview"
+      : activeTab === "disputes"
+      ? "Disputes"
+      : activeTab === "documents"
+      ? "Documents"
+      : activeTab === "tasks"
+      ? "Tasks"
+      : activeTab === "billing"
+      ? "Billing"
+      : "";
 
   return (
     <div className="space-y-6">
@@ -108,12 +164,36 @@ export default function ClientDetailsPage() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{client.email}</span>
+                <span className="text-muted-foreground">{client.emailDisplay}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{client.phone}</span>
+                <span className="text-muted-foreground">{client.phoneDisplay}</span>
               </div>
+              {client.address ? (
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-muted-foreground mt-1" />
+                  <span className="text-muted-foreground leading-snug">{client.address}</span>
+                </div>
+              ) : null}
+              {client.source ? (
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Source: {client.source}</span>
+                </div>
+              ) : null}
+              {client.dobLabel ? (
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">DOB: {client.dobLabel}</span>
+                </div>
+              ) : null}
+              {client.last4SsnMasked ? (
+                <div className="flex items-center gap-2">
+                  <Fingerprint className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">SSN: {client.last4SsnMasked}</span>
+                </div>
+              ) : null}
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Joined {client.joined}</span>
@@ -139,7 +219,7 @@ export default function ClientDetailsPage() {
               </div>
               <div className="p-3 rounded-xl bg-success/10">
                 <div className="text-xs text-muted-foreground mb-1">Status</div>
-                <div className="h4 text-success">{client.status}</div>
+                <div className="h4 text-success">{client.statusLabel}</div>
               </div>
             </div>
           </div>
