@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { 
   Users, 
   FileText, 
@@ -20,9 +21,13 @@ import { ModernChart } from "@/components/charts/ModernChart";
 import { cn } from "@/lib/utils";
 import { bgTint, hoverBgTintGroup, textColor, bgSolid, type BrandColor } from "@/lib/color-variants";
 import PageHeader from "@/components/PageHeader";
+import { addClient as persistClient } from "@/lib/client-directory";
+import { AddClientDialog, type AddClientFormValues } from "@/components/clients/AddClientDialog";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [addClientOpen, setAddClientOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -30,6 +35,11 @@ export default function DashboardPage() {
     }, 800);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleAddClient = (values: AddClientFormValues) => {
+    const record = persistClient(values);
+    router.push(`/clients?highlight=${encodeURIComponent(record.id)}`);
+  };
 
   if (loading) {
     return (
@@ -201,7 +211,7 @@ export default function DashboardPage() {
               <Filter className="w-4 h-4" />
               Filter
             </button>
-            <button className="button-primary inline-flex items-center gap-2">
+            <button type="button" onClick={() => setAddClientOpen(true)} className="button-primary inline-flex items-center gap-2">
               <Plus className="w-4 h-4" />
               Add Client
             </button>
@@ -415,6 +425,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
       </div>
+      <AddClientDialog open={addClientOpen} onOpenChange={setAddClientOpen} onCreate={handleAddClient} />
     </div>
   );
 }

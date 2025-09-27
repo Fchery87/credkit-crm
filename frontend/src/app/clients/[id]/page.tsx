@@ -1,32 +1,73 @@
+
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, Calendar, Mail, Phone, User, CreditCard, FileText, CheckSquare, Folder } from "lucide-react";
 import DisputeSuggestionsPanel from "@/components/disputes/DisputeSuggestionsPanel";
+import { SAMPLE_CLIENTS, getClientRoster, subscribeToClientRoster, type ClientRecord } from "@/lib/client-directory";
+
+type ClientProfile = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: string;
+  joined: string;
+  plan: string;
+  disputes: number;
+  tasks: number;
+  documents: number;
+};
 
 export default function ClientDetailsPage() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
   const clientId = Array.isArray(rawId) ? rawId[0] : rawId;
   const [activeTab, setActiveTab] = useState("overview");
+  const [clients, setClients] = useState<ClientRecord[]>(SAMPLE_CLIENTS);
 
-  // Demo data; replace with fetch by id
-  const client = useMemo(() => ({
-    id: clientId ?? "--",
-    name: "Sarah Johnson",
-    email: "sarah.j@email.com",
-    phone: "+1 (555) 0123",
-    status: "Active",
-    joined: "2024-01-15",
-    plan: "Professional",
-    disputes: 5,
-    tasks: 3,
-    documents: 12,
-  }), [id]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setClients(getClientRoster());
+    const unsubscribe = subscribeToClientRoster(setClients);
+    return unsubscribe;
+  }, []);
+
+  const client = useMemo<ClientProfile>(() => {
+    const match = clientId ? clients.find((record) => record.id === clientId) : undefined;
+    if (match) {
+      return {
+        id: match.id,
+        name: match.name,
+        email: match.email,
+        phone: match.phone,
+        status: match.status === "inactive" ? "Inactive" : match.status === "pending" ? "Pending" : "Active",
+        joined: match.joinDate,
+        plan: match.stage,
+        disputes: match.disputes,
+        tasks: match.tasks,
+        documents: (match as { documents?: number }).documents ?? 0,
+      };
+    }
+
+    const fallback = SAMPLE_CLIENTS[0];
+    return {
+      id: clientId ?? fallback.id,
+      name: fallback.name,
+      email: fallback.email,
+      phone: fallback.phone,
+      status: fallback.status === "inactive" ? "Inactive" : fallback.status === "pending" ? "Pending" : "Active",
+      joined: fallback.joinDate,
+      plan: fallback.stage,
+      disputes: fallback.disputes,
+      tasks: fallback.tasks,
+      documents: (fallback as { documents?: number }).documents ?? 0,
+    };
+  }, [clients, clientId]);
 
   const tabLabel =
     activeTab === "overview" ? "Overview" :
@@ -61,7 +102,6 @@ export default function ClientDetailsPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar metrics */}
         <div className="lg:col-span-1 space-y-6">
           <div className="card-modern p-6">
             <h3 className="h4 mb-4">Overview</h3>
@@ -80,7 +120,7 @@ export default function ClientDetailsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">{client.plan} Plan</span>
+                <span className="text-muted-foreground">{client.plan}</span>
               </div>
             </div>
 
@@ -105,7 +145,6 @@ export default function ClientDetailsPage() {
           </div>
         </div>
 
-        {/* Main tabs */}
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-muted/30 p-1 rounded-xl">

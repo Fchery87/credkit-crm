@@ -1,116 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Users,
   Plus,
-  Search,
   Filter,
   Download,
   MoreHorizontal,
-  Edit,
-  Trash2,
   Mail,
   Phone,
   Calendar,
-  Tag,
   CheckSquare2,
-  FileText
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import { DataTable, type Column } from "@/components/tables/DataTable";
 import TableToolbar from "@/components/tables/TableToolbar";
-
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  stage: string;
-  joinDate: string;
-  lastActivity: string;
-  status: "active" | "inactive" | "pending";
-  tags: string[];
-  disputes: number;
-  tasks: number;
-}
+import { AddClientDialog, type AddClientFormValues } from "@/components/clients/AddClientDialog";
+import {
+  SAMPLE_CLIENTS,
+  addClient as persistClient,
+  getClientRoster,
+  subscribeToClientRoster,
+  type ClientRecord,
+} from "@/lib/client-directory";
 
 export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
+  const [addClientOpen, setAddClientOpen] = useState(false);
+  const [clients, setClients] = useState<ClientRecord[]>(SAMPLE_CLIENTS);
   const [viewMode, setViewMode] = useState<"all" | "active" | "pending">("all");
-
-  // Sample data
-  const clients: Client[] = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      email: "sarah.j@email.com",
-      phone: "+1 (555) 0123",
-      stage: "Active Client",
-      joinDate: "2024-01-15",
-      lastActivity: "2 hours ago",
-      status: "active",
-      tags: ["VIP", "High Priority"],
-      disputes: 3,
-      tasks: 2
-    },
-    {
-      id: "2", 
-      name: "Michael Brown",
-      email: "m.brown@email.com",
-      phone: "+1 (555) 0124",
-      stage: "Prospect",
-      joinDate: "2024-01-20",
-      lastActivity: "1 day ago",
-      status: "pending",
-      tags: ["New Client"],
-      disputes: 1,
-      tasks: 1
-    },
-    {
-      id: "3",
-      name: "Jennifer Davis",
-      email: "jen.davis@email.com", 
-      phone: "+1 (555) 0125",
-      stage: "Active Client",
-      joinDate: "2024-01-10",
-      lastActivity: "3 hours ago",
-      status: "active",
-      tags: ["Referral"],
-      disputes: 5,
-      tasks: 3
-    }
-  ];
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(timer);
   }, []);
 
-  const filteredClients = clients.filter(client => {
-    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesView = viewMode === "all" || client.status === viewMode;
-    return matchesSearch && matchesView;
-  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setClients(getClientRoster());
+    const unsubscribe = subscribeToClientRoster(setClients);
+    return unsubscribe;
+  }, []);
+
+  const highlightId = searchParams?.get("highlight");
+  useEffect(() => {
+    if (!highlightId) return;
+    setSelectedClients([highlightId]);
+    setViewMode("all");
+  }, [highlightId]);
+
+  const handleClientCreate = (values: AddClientFormValues) => {
+    const record = persistClient(values);
+    if (typeof window !== "undefined") {
+      setClients(getClientRoster());
+    } else {
+      setClients((previous) => [record, ...previous]);
+    }
+    setSelectedClients([record.id]);
+    setViewMode("all");
+    setSearchTerm("");
+  };
+
+  const filteredClients = useMemo(() => {
+    return clients.filter((client) => {
+      const matchesSearch =
+        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesView = viewMode === "all" || client.status === viewMode;
+      return matchesSearch && matchesView;
+    });
+  }, [clients, searchTerm, viewMode]);
 
   const toggleSelect = (id: string) => {
-    setSelectedClients(prev =>
-      prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]
+    setSelectedClients((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]
     );
   };
 
-  const allSelected = selectedClients.length > 0 && selectedClients.length === filteredClients.length;
+  const allSelected =
+    filteredClients.length > 0 &&
+    selectedClients.length === filteredClients.length;
 
-  const columns: Column<Client & { __select?: boolean }> [] = [
+  const columns: Column<ClientRecord & { __select?: boolean }>[] = [
     {
       key: "id",
       label: "",
-      render: (_v, item) => (
+      render: (_value, item) => (
         <input
           type="checkbox"
           checked={selectedClients.includes(item.id)}
@@ -124,19 +105,25 @@ export default function ClientsPage() {
       key: "name",
       label: "Client",
       sortable: true,
-      render: (_v, item) => (
+      render: (_value, item) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-semibold text-primary">
-              {item.name.split(" ").map(n => n[0]).join("")}
+              {item.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </span>
           </div>
           <div>
-            <a href={`/clients/${item.id}`} className="font-medium text-foreground hover:text-primary transition-colors duration-150">
+            <a
+              href={`/clients/${item.id}`}
+              className="font-medium text-foreground hover:text-primary transition-colors duration-150"
+            >
               {item.name}
             </a>
             <div className="flex items-center gap-2 mt-1">
-              {item.tags.map(tag => (
+              {item.tags.map((tag) => (
                 <span key={tag} className="badge-info text-xs">
                   {tag}
                 </span>
@@ -144,12 +131,12 @@ export default function ClientsPage() {
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "email",
       label: "Contact",
-      render: (_v, item) => (
+      render: (_value, item) => (
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Mail className="w-3 h-3" />
@@ -160,22 +147,25 @@ export default function ClientsPage() {
             {item.phone}
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "stage",
       label: "Stage",
-      render: (_v, item) => {
-        const badge =
-          item.status === "active" ? "badge-success" :
-          item.status === "pending" ? "badge-warning" : "badge-muted";
-        return <span className={badge}>{item.stage}</span>;
-      }
+      render: (_value, item) => {
+        const badgeClass =
+          item.status === "active"
+            ? "badge-success"
+            : item.status === "pending"
+            ? "badge-warning"
+            : "badge-muted";
+        return <span className={badgeClass}>{item.stage}</span>;
+      },
     },
     {
       key: "joinDate",
       label: "Activity",
-      render: (_v, item) => (
+      render: (_value, item) => (
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="w-3 h-3" />
@@ -185,12 +175,12 @@ export default function ClientsPage() {
             Last activity: {item.lastActivity}
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "disputes",
       label: "Progress",
-      render: (_v, item) => (
+      render: (_value, item) => (
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <FileText className="w-3 h-3 text-muted-foreground" />
@@ -201,12 +191,12 @@ export default function ClientsPage() {
             <span className="text-xs text-muted-foreground">{item.tasks}</span>
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "tasks",
       label: "",
-      render: (_v, item) => (
+      render: () => (
         <div className="flex justify-end">
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
             <MoreHorizontal className="w-4 h-4" />
@@ -214,18 +204,18 @@ export default function ClientsPage() {
         </div>
       ),
       width: "48px",
-    }
+    },
   ];
 
   if (loading) {
     return (
       <div className="space-y-6">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-muted rounded-xl w-48"></div>
-          <div className="h-12 bg-muted rounded-xl"></div>
+          <div className="h-8 bg-muted rounded-xl w-48" />
+          <div className="h-12 bg-muted rounded-xl" />
           <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-muted rounded-xl"></div>
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="h-16 bg-muted rounded-xl" />
             ))}
           </div>
         </div>
@@ -245,7 +235,7 @@ export default function ClientsPage() {
               <Download className="w-4 h-4" />
               Export
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => setAddClientOpen(true)}>
               <Plus className="w-4 h-4" />
               Add Client
             </Button>
@@ -262,7 +252,7 @@ export default function ClientsPage() {
               { key: "pending", label: "Pending" },
             ]}
             selectedChip={viewMode}
-            onChipSelect={(key) => setViewMode(key as any)}
+            onChipSelect={(key) => setViewMode(key as typeof viewMode)}
             rightActions={
               <Button variant="outline" size="sm" className="gap-2">
                 <Filter className="w-4 h-4" />
@@ -281,12 +271,18 @@ export default function ClientsPage() {
           className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between"
         >
           <span className="text-sm font-medium text-primary">
-            {selectedClients.length} client{selectedClients.length > 1 ? 's' : ''} selected
+            {selectedClients.length} client{selectedClients.length > 1 ? "s" : ""} selected
           </span>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">Update Stage</Button>
-            <Button variant="outline" size="sm">Add Tags</Button>
-            <Button variant="outline" size="sm">Export</Button>
+            <Button variant="outline" size="sm">
+              Update Stage
+            </Button>
+            <Button variant="outline" size="sm">
+              Add Tags
+            </Button>
+            <Button variant="outline" size="sm">
+              Export
+            </Button>
           </div>
         </motion.div>
       )}
@@ -301,21 +297,28 @@ export default function ClientsPage() {
               if (allSelected) {
                 setSelectedClients([]);
               } else {
-                setSelectedClients(filteredClients.map(c => c.id));
+                setSelectedClients(filteredClients.map((client) => client.id));
               }
             }}
           />
           <span className="text-sm text-muted-foreground">Select all</span>
         </div>
-        <DataTable<Client>
+        <DataTable<ClientRecord>
           data={filteredClients}
-          columns={columns as any}
+          columns={columns}
           loading={false}
           searchable={false}
-          emptyMessage={searchTerm ? "No clients match your search" : "No clients found"}
+          emptyMessage={
+            searchTerm ? "No clients match your search" : "No clients found"
+          }
           className="p-4"
         />
       </div>
+      <AddClientDialog
+        open={addClientOpen}
+        onOpenChange={setAddClientOpen}
+        onCreate={handleClientCreate}
+      />
     </div>
   );
 }
