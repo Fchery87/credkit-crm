@@ -52,11 +52,13 @@ def override_get_db():
 # Ensure server defaults like '::jsonb' are stripped so SQLite can create tables
 
 def _normalize_defaults(metadata):
+    originals = []
     for table in metadata.tables.values():
         for column in table.columns:
             default = column.server_default
             if default is None:
                 continue
+            originals.append((column, default))
             if hasattr(default, 'arg'):
                 raw = str(default.arg)
             else:
@@ -70,6 +72,13 @@ def _normalize_defaults(metadata):
                 raw = raw[1:-1]
             cleaned = raw.strip()
             column.server_default = cleaned if cleaned else None
+    return originals
+
+
+
+def _restore_defaults(defaults):
+    for column, original in defaults:
+        column.server_default = original
 
 
 
@@ -79,7 +88,7 @@ def client():
     db_file = Path("test_dispute_suggestions.db")
     if db_file.exists():
         db_file.unlink()
-    _normalize_defaults(Base.metadata)
+    original_defaults = _normalize_defaults(Base.metadata)
     Base.metadata.drop_all(bind=engine)
 
     Base.metadata.create_all(bind=engine)
@@ -90,6 +99,7 @@ def client():
     finally:
         app.dependency_overrides.pop(get_db, None)
         Base.metadata.drop_all(bind=engine)
+        _restore_defaults(original_defaults)
 
 @pytest.fixture
 def seeded_user():
