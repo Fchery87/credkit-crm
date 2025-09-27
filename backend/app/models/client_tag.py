@@ -11,5 +11,5 @@ client_tags = Table(
     Column('id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column('client_id', UUID(as_uuid=True), ForeignKey('clients.id'), nullable=False),
     Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'), nullable=False),
-    Column('created_at', DateTime, server_default=func.now())
+    Column('created_at', DateTime(timezone=True), server_default=func.now())
 )

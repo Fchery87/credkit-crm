@@ -34,8 +34,8 @@ class GeneratedLetter(TimestampMixin, SoftDeleteMixin, Base):
     body = Column(Text, nullable=False)
     render_context = Column(JSONB, nullable=False, server_default=text("'{}'::jsonb"))
     attachments = Column(JSONB, nullable=False, server_default=text("'[]'::jsonb"))
-    sent_at = Column(DateTime)
-    delivered_at = Column(DateTime)
+    sent_at = Column(DateTime(timezone=True))
+    delivered_at = Column(DateTime(timezone=True))
 
     tenant = relationship("Tenant", back_populates="generated_letters")
     client = relationship("Client", back_populates="generated_letters")

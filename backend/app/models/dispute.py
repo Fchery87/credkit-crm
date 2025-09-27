@@ -23,8 +23,8 @@ class Dispute(Base):
     client_id = Column(UUID(as_uuid=True), ForeignKey("clients.id"), nullable=False)
     title = Column(String, nullable=False)
     status = Column(Enum(DisputeStatus), default=DisputeStatus.DRAFT, nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     tenant = relationship("Tenant", back_populates="disputes")
     client = relationship("Client", back_populates="disputes")

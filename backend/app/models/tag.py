@@ -14,8 +14,8 @@ class Tag(Base):
     name = Column(String, nullable=False)
     color = Column(String, default="#3B82F6")  # Default blue color
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant", back_populates="tags")

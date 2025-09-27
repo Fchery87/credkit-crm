@@ -16,7 +16,7 @@ class Client(Base):
     last_name = Column(String, nullable=False)
     email = Column(String)
     phone = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     tenant = relationship("Tenant", back_populates="clients")
     stage = relationship("Stage", back_populates="clients")

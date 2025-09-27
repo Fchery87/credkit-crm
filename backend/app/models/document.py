@@ -59,8 +59,8 @@ class Document(Base):
     
     # Audit trail
     uploaded_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant", back_populates="documents")
@@ -77,7 +77,7 @@ class DocumentShare(Base):
     
     # Share details
     share_token = Column(String, unique=True, nullable=False)  # Unique token for access
-    expires_at = Column(DateTime)
+    expires_at = Column(DateTime(timezone=True))
     max_downloads = Column(Integer, default=1)
     download_count = Column(Integer, default=0)
     
@@ -87,8 +87,8 @@ class DocumentShare(Base):
     
     # Audit
     created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    last_accessed = Column(DateTime)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_accessed = Column(DateTime(timezone=True))
 
     # Relationships
     document = relationship("Document")

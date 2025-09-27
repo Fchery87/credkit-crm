@@ -39,8 +39,8 @@ class SuggestionRun(TimestampMixin, SoftDeleteMixin, Base):
     result = Column(JSONB, nullable=False, server_default=text("'{}'::jsonb"))
     suggestions = Column(JSONB, nullable=False, server_default=text("'[]'::jsonb"))
     score = Column(Float)
-    started_at = Column(DateTime)
-    completed_at = Column(DateTime)
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
     error = Column(Text)
 
     tenant = relationship("Tenant", back_populates="suggestion_runs")

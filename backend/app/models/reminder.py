@@ -1,6 +1,6 @@
 import uuid
 import enum
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Enum, DateTime as DT
+from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -31,17 +31,19 @@ class Reminder(Base):
     message = Column(Text)
     reminder_type = Column(Enum(ReminderType), default=ReminderType.IN_APP)
     status = Column(Enum(ReminderStatus), default=ReminderStatus.PENDING)
-    scheduled_at = Column(DT, nullable=False)
-    sent_at = Column(DT)
+    scheduled_at = Column(DateTime(timezone=True), nullable=False)
+    sent_at = Column(DateTime(timezone=True))
 
     # Who to notify
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant", back_populates="reminders")
     client = relationship("Client", back_populates="reminders")
     task = relationship("Task", back_populates="reminders")
     user = relationship("User", back_populates="reminders")
+
+

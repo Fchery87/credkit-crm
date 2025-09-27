@@ -10,7 +10,7 @@ class Tenant(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
-    createdAt = Column("created_at", DateTime, server_default=func.now())
+    createdAt = Column("created_at", DateTime(timezone=True), server_default=func.now())
 
     users = relationship("User", back_populates="tenant")
     clients = relationship("Client", back_populates="tenant")

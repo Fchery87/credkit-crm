@@ -41,9 +41,9 @@ class Subscription(Base):
     currency = Column(String, default="USD")
     
     # Billing cycle
-    current_period_start = Column(DateTime)
-    current_period_end = Column(DateTime)
-    trial_end = Column(DateTime)
+    current_period_start = Column(DateTime(timezone=True))
+    current_period_end = Column(DateTime(timezone=True))
+    trial_end = Column(DateTime(timezone=True))
     
     # Usage tracking
     seats_included = Column(Integer, default=1)
@@ -53,8 +53,8 @@ class Subscription(Base):
     
     # Metadata
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant", back_populates="subscription")
@@ -80,14 +80,14 @@ class Invoice(Base):
     
     # Status and dates
     status = Column(String, default="draft")  # draft, open, paid, void, uncollectible
-    due_date = Column(DateTime)
-    paid_at = Column(DateTime)
+    due_date = Column(DateTime(timezone=True))
+    paid_at = Column(DateTime(timezone=True))
     
     # S3 storage for invoice PDFs
     pdf_url = Column(String)
     
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     subscription = relationship("Subscription", back_populates="invoices")

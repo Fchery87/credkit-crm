@@ -35,9 +35,9 @@ class DisputeCase(TimestampMixin, SoftDeleteMixin, Base):
     description = Column(Text)
     status = Column(Enum(DisputeCaseStatus), nullable=False, default=DisputeCaseStatus.OPEN)
     priority = Column(Enum(DisputeCasePriority), nullable=False, default=DisputeCasePriority.MEDIUM)
-    opened_at = Column(DateTime, server_default=func.now(), nullable=False)
-    closed_at = Column(DateTime)
-    last_activity_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    opened_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    closed_at = Column(DateTime(timezone=True))
+    last_activity_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     tenant = relationship("Tenant", back_populates="dispute_cases")
     client = relationship("Client", back_populates="dispute_cases")

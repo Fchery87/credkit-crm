@@ -16,8 +16,8 @@ class Stage(Base):
     order = Column(Integer, nullable=False)  # For ordering stages in pipeline
     color = Column(String, default="#3B82F6")  # For UI display
 
-    created_at = Column(DateTime, server_default=func.now())
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant", back_populates="stages")

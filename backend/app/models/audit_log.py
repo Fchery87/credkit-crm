@@ -66,10 +66,10 @@ class AuditLog(Base):
     
     # Compliance fields
     is_sensitive = Column(Boolean, default=False)  # Mark sensitive data access
-    retention_date = Column(DateTime)  # When this log can be purged
+    retention_date = Column(DateTime(timezone=True))  # When this log can be purged
     
     # Immutable timestamp
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
     tenant = relationship("Tenant", back_populates="audit_logs")
@@ -99,7 +99,7 @@ class DataAccessLog(Base):
     is_authorized = Column(Boolean, default=True)
     consent_given = Column(Boolean, default=False)
     
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
     tenant = relationship("Tenant")
@@ -126,15 +126,15 @@ class ComplianceEvent(Base):
     
     # Response and resolution
     response_required = Column(Boolean, default=False)
-    response_deadline = Column(DateTime)
-    resolved_at = Column(DateTime)
+    response_deadline = Column(DateTime(timezone=True))
+    resolved_at = Column(DateTime(timezone=True))
     resolution_notes = Column(Text)
     
     # Metadata
     event_data = Column(JSON)
     
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relationships
     tenant = relationship("Tenant")
